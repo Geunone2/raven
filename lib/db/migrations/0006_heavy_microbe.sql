@@ -1,0 +1,1 @@
+ALTER TABLE `guild_members` ADD `guild_name` text;

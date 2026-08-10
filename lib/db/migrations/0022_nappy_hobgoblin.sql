@@ -1,0 +1,1 @@
+ALTER TABLE `content_schedules` ADD `reward_settled_at` text;

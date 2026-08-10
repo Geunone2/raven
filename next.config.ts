@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "hedwig-cf.netmarble.com",
+        pathname: "/forum-common/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

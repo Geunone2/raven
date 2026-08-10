@@ -1,0 +1,1 @@
+ALTER TABLE `content_schedules` ADD `server_name` text;

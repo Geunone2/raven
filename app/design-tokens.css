@@ -1,0 +1,75 @@
+/*
+ * Design tokens — light theme (dark mode planned as a follow-up).
+ *
+ * Components reference these semantic tokens (bg-surface, text-ink,
+ * border-edge, ...) instead of raw palette utilities, so the whole
+ * look — including a future dark variant — can be retuned from this
+ * file alone.
+ */
+@theme {
+  /* Surfaces, layered by elevation */
+  --color-surface: #ffffff;
+  --color-surface-raised: #f6f7f9;
+  --color-surface-sunken: #f1f2f5;
+  --color-surface-hover: #ececef;
+
+  /* Borders / dividers */
+  --color-edge: #e4e4e7;
+  --color-edge-strong: #d4d4d8;
+
+  /* Text */
+  --color-ink: #18181b;
+  --color-ink-muted: #52525b;
+  --color-ink-faint: #71717a;
+
+  /* Brand accent — guild gold, darkened for contrast on a white surface */
+  --color-brand: #9c7a1f;
+  --color-brand-bright: #b8912c;
+
+  /* Status */
+  --color-danger: #dc2626;
+  --color-danger-strong: #b91c1c;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-info: #2563eb;
+
+  /* Ranking-card accents, one per stat category */
+  --color-rank-total: #7c3aed;
+  --color-rank-attack: #dc2626;
+  --color-rank-defense: #2563eb;
+  --color-rank-accuracy: #ca8a04;
+
+  /* Medal colors for rank badges 1st/2nd/3rd */
+  --color-medal-gold: #f5c518;
+  --color-medal-silver: #b6bcc4;
+  --color-medal-bronze: #d97a3d;
+
+  /* Loot grade colors: 전설/영웅/희귀 */
+  --color-grade-legendary: #eab308;
+  --color-grade-hero: #9333ea;
+  --color-grade-rare: #2563eb;
+
+  /* Loot category colors: 무기/방어구/장신구/헤븐스톤/스킬북/컬렉템 */
+  --color-category-weapon: #e11d48;
+  --color-category-armor: #0891b2;
+  --color-category-accessory: #db2777;
+  --color-category-heavenstone: #0d9488;
+  --color-category-skillbook: #b45309;
+  --color-category-other: #64748b;
+
+  /* Generic swatch palette — deterministic per-string coloring for free-text
+     labels (e.g. custody guild) that aren't a closed enum. */
+  --color-swatch-1: #4f46e5;
+  --color-swatch-2: #c026d3;
+  --color-swatch-3: #65a30d;
+  --color-swatch-4: #0284c7;
+  --color-swatch-5: #9a3412;
+
+  /* Content type colors: 길드 던전/어비스/필드 보스/균열/고대 성채/기타 이벤트 */
+  --color-content-guild-dungeon: #3730a3;
+  --color-content-abyss: #9f1239;
+  --color-content-field-boss: #ea580c;
+  --color-content-rift: #4d7c0f;
+  --color-content-ancient-fortress: #57534e;
+  --color-content-other: #475569;
+}

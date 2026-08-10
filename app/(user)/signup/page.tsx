@@ -1,0 +1,58 @@
+import { signup } from "@/lib/actions/auth";
+import { FormField } from "@/components/molecules/FormField";
+import { Input } from "@/components/atoms/Input";
+import { Button } from "@/components/atoms/Button";
+
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
+
+  return (
+    <div className="flex h-full items-center justify-center">
+      <div className="w-full max-w-lg rounded-xl border border-edge bg-surface-raised/60 p-10">
+        <div className="space-y-8">
+          <div>
+            <h1 className="text-2xl font-semibold text-ink">
+              회원가입
+            </h1>
+            <p className="mt-1 text-sm text-ink-muted">
+              닉네임과 비밀번호만 입력하면 바로 가입돼요. 전투력은 가입 후 랭킹
+              페이지에서 입력하면 됩니다.
+            </p>
+            {error === "duplicate" && (
+              <p className="mt-2 text-sm text-danger">이미 사용 중인 닉네임입니다.</p>
+            )}
+            {error === "invalid" && (
+              <p className="mt-2 text-sm text-danger">
+                비밀번호는 8자 이상이어야 하고, 확인란과 일치해야 합니다.
+              </p>
+            )}
+          </div>
+          <form action={signup} className="space-y-4">
+            <FormField label="닉네임" htmlFor="nickname">
+              <Input id="nickname" name="nickname" required />
+            </FormField>
+            <FormField label="비밀번호" htmlFor="password">
+              <Input id="password" name="password" type="password" minLength={8} required />
+            </FormField>
+            <FormField label="비밀번호 확인" htmlFor="passwordConfirm">
+              <Input
+                id="passwordConfirm"
+                name="passwordConfirm"
+                type="password"
+                minLength={8}
+                required
+              />
+            </FormField>
+            <div className="flex justify-end pt-2">
+              <Button type="submit">가입하기</Button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}

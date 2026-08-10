@@ -1,0 +1,1 @@
+ALTER TABLE `guild_members` DROP COLUMN `abyss_ticket_status`;
