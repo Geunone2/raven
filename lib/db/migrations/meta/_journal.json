@@ -169,6 +169,13 @@
       "when": 1786615715073,
       "tag": "0023_whole_wild_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "6",
+      "when": 1786618113929,
+      "tag": "0024_quiet_fallen_one",
+      "breakpoints": true
     }
   ]
 }

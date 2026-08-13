@@ -1,33 +1,18 @@
 "use server";
 
-import { and, asc, desc, eq, like, sql } from "drizzle-orm";
+import { asc, desc, eq, sql } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db/client";
-import { characterTypes, guildMemberRoles, guildMembers, memberStatHistory } from "@/lib/db/schema";
+import { characterTypes, guildMembers, memberStatHistory } from "@/lib/db/schema";
 import type { RankStat, UpdateStatsResult } from "@/lib/constants/members";
 import { getSessionMemberId } from "@/lib/auth/session";
 import { requireAdmin } from "@/lib/auth/adminSession";
 
-export type MemberFilters = {
-  q?: string;
-  role?: string;
-};
-
-export async function getMembers(filters: MemberFilters = {}) {
-  const conditions = [];
-  if (filters.q) {
-    conditions.push(like(guildMembers.nickname, `%${filters.q}%`));
-  }
-  if (filters.role && (guildMemberRoles as readonly string[]).includes(filters.role)) {
-    conditions.push(eq(guildMembers.role, filters.role as (typeof guildMemberRoles)[number]));
-  }
-
-  return db
-    .select()
-    .from(guildMembers)
-    .where(conditions.length ? and(...conditions) : undefined)
-    .orderBy(desc(guildMembers.createdAt));
+// 길드/서버/클래스/정렬 필터링은 클라이언트에서(MemberPanel.tsx의 버튼 칩)
+// 처리한다 — 이 함수는 전체 목록을 한 번만 내려준다.
+export async function getMembers() {
+  return db.select().from(guildMembers).orderBy(desc(guildMembers.createdAt));
 }
 
 export async function getMembersRanked() {
@@ -70,8 +55,6 @@ function parseMemberForm(formData: FormData) {
     attack: Number(formData.get("attack") ?? 0),
     defense: Number(formData.get("defense") ?? 0),
     accuracy: Number(formData.get("accuracy") ?? 0),
-    role: String(formData.get("role") ?? "member") as (typeof guildMemberRoles)[number],
-    lastLoginAt: String(formData.get("lastLoginAt") ?? "") || null,
     memo: String(formData.get("memo") ?? "") || null,
   };
 }

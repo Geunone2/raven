@@ -1,12 +1,13 @@
-import { GuildMember, guildMemberRoles } from "@/lib/db/schema";
-import { roleLabels } from "@/lib/constants/members";
+import { GuildMember } from "@/lib/db/schema";
 import { SERVERS } from "@/lib/constants/schedules";
 import { FormField } from "@/components/molecules/FormField";
 import { Input } from "@/components/atoms/Input";
-import { Select } from "@/components/atoms/Select";
+import { CustomSelect } from "@/components/atoms/CustomSelect";
 import { Textarea } from "@/components/atoms/Textarea";
-import { Button } from "@/components/atoms/Button";
 
+// id="member-edit-form"으로 폼 자체엔 저장 버튼을 두지 않는다 — 페이지 쪽에서
+// 전투력 추이 그래프 아래에 <button form="member-edit-form"> 형태로 따로
+// 배치한다(이 폼의 유일한 사용처가 그 페이지라 안전하게 분리 가능).
 export function MemberForm({
   member,
   action,
@@ -15,8 +16,8 @@ export function MemberForm({
   action: (formData: FormData) => void;
 }) {
   return (
-    <form action={action} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+    <form id="member-edit-form" action={action} className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="닉네임" htmlFor="nickname">
           <Input
             id="nickname"
@@ -35,7 +36,7 @@ export function MemberForm({
         </FormField>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="길드명" htmlFor="guildName">
           <Input
             id="guildName"
@@ -45,18 +46,19 @@ export function MemberForm({
           />
         </FormField>
         <FormField label="서버" htmlFor="server">
-          <Select id="server" name="server" defaultValue={member.server ?? ""}>
-            <option value="">(미지정)</option>
-            {SERVERS.map((server) => (
-              <option key={server} value={server}>
-                {server}
-              </option>
-            ))}
-          </Select>
+          <CustomSelect
+            id="server"
+            name="server"
+            defaultValue={member.server ?? ""}
+            options={[
+              { value: "", label: "(미지정)" },
+              ...SERVERS.map((server) => ({ value: server, label: server })),
+            ]}
+          />
         </FormField>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <FormField label="레벨" htmlFor="level">
           <Input
             id="level"
@@ -95,33 +97,9 @@ export function MemberForm({
         </FormField>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <FormField label="직책" htmlFor="role">
-          <Select id="role" name="role" defaultValue={member.role}>
-            {guildMemberRoles.map((role) => (
-              <option key={role} value={role}>
-                {roleLabels[role]}
-              </option>
-            ))}
-          </Select>
-        </FormField>
-        <FormField label="최근 접속일" htmlFor="lastLoginAt">
-          <Input
-            id="lastLoginAt"
-            name="lastLoginAt"
-            type="date"
-            defaultValue={member.lastLoginAt ?? ""}
-          />
-        </FormField>
-      </div>
-
       <FormField label="메모" htmlFor="memo">
         <Textarea id="memo" name="memo" defaultValue={member.memo ?? ""} rows={3} />
       </FormField>
-
-      <div className="flex justify-end gap-3 pt-2">
-        <Button type="submit">저장</Button>
-      </div>
     </form>
   );
 }

@@ -16,6 +16,17 @@ export const characterTypeLabels: Record<(typeof characterTypes)[number], string
 
 export const GUILD_NAMES = ["리더1", "리더2", "리더4"];
 
+// 관리자 길드원 목록(/admin/members) 정렬 기준. 연속값(총 전투력)/날짜(전투력
+// 입력 시각)라 길드/서버/클래스 같은 드롭다운 필터로는 안 맞아서 별도 정렬로 뺐다.
+export type MemberSort = "power_desc" | "power_asc" | "stats_updated_desc" | "stats_updated_asc";
+
+export const MEMBER_SORT_LABELS: Record<MemberSort, string> = {
+  power_desc: "총 전투력 높은순",
+  power_asc: "총 전투력 낮은순",
+  stats_updated_desc: "전투력 입력 최신순",
+  stats_updated_asc: "전투력 입력 오래된순",
+};
+
 export const CLASS_NAMES = [
   "뱅가드",
   "버서커",

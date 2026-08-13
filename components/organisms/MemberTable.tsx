@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { GuildMember } from "@/lib/db/schema";
-import { roleLabels } from "@/lib/constants/members";
-import { Badge } from "@/components/atoms/Badge";
 import { deleteMember } from "@/lib/actions/members";
+import { formatMonthDayTimeUtcWithSeconds } from "@/lib/time";
 
 export function MemberTable({ members }: { members: GuildMember[] }) {
   if (members.length === 0) {
@@ -26,8 +25,7 @@ export function MemberTable({ members }: { members: GuildMember[] }) {
             <th className="px-4 py-3 font-medium">공격력</th>
             <th className="px-4 py-3 font-medium">방어력</th>
             <th className="px-4 py-3 font-medium">명중</th>
-            <th className="px-4 py-3 font-medium">직책</th>
-            <th className="px-4 py-3 font-medium">최근 접속일</th>
+            <th className="px-4 py-3 font-medium">전투력 입력일</th>
             <th className="px-4 py-3 font-medium" />
           </tr>
         </thead>
@@ -44,11 +42,8 @@ export function MemberTable({ members }: { members: GuildMember[] }) {
               <td className="px-4 py-3">{member.attack}</td>
               <td className="px-4 py-3">{member.defense}</td>
               <td className="px-4 py-3">{member.accuracy}</td>
-              <td className="px-4 py-3">
-                <Badge>{roleLabels[member.role]}</Badge>
-              </td>
               <td className="px-4 py-3 text-ink-faint">
-                {member.lastLoginAt ?? "-"}
+                {member.statsUpdatedAt ? formatMonthDayTimeUtcWithSeconds(member.statsUpdatedAt) : "-"}
               </td>
               <td className="px-4 py-3">
                 <div className="flex items-center justify-end gap-3">

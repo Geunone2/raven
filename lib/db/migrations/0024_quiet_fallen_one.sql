@@ -1,0 +1,1 @@
+ALTER TABLE `guild_members` DROP COLUMN `last_login_at`;

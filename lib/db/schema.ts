@@ -28,7 +28,6 @@ export const guildMembers = sqliteTable("guild_members", {
   defense: integer("defense").notNull().default(0),
   accuracy: integer("accuracy").notNull().default(0),
   role: text("role", { enum: guildMemberRoles }).notNull().default("member"),
-  lastLoginAt: text("last_login_at"),
   memo: text("memo"),
   statsUpdatedAt: text("stats_updated_at"),
   createdAt: text("created_at")
