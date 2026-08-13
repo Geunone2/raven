@@ -16,18 +16,6 @@ export const characterTypeLabels: Record<(typeof characterTypes)[number], string
 
 export const GUILD_NAMES = ["리더1", "리더2", "리더4"];
 
-// 길드마다 소속 서버가 고정되어 있다 (리더1/리더4 = 메투스, 리더2 = 돌로르).
-export const GUILD_SERVER_MAP: Record<string, string> = {
-  리더1: "메투스",
-  리더4: "메투스",
-  리더2: "돌로르",
-};
-
-export function getGuildServer(guildName: string | null): string | null {
-  if (!guildName) return null;
-  return GUILD_SERVER_MAP[guildName] ?? null;
-}
-
 export const CLASS_NAMES = [
   "뱅가드",
   "버서커",

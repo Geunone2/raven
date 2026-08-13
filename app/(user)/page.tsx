@@ -176,7 +176,7 @@ export default async function GuildHomePage() {
         <AttendanceCard
             schedules={checkinSchedules}
             myCheckinByScheduleId={myCheckinScheduleCheckins}
-            myGuildName={member?.guildName ?? null}
+            myServer={member?.server ?? null}
         />
     );
     const auctionCard = (

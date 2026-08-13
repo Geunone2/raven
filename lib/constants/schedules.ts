@@ -46,7 +46,9 @@ export const targetAudienceLabels: Record<
   specific_party: "특정 파티",
 };
 
-export const SERVERS = ["메투스", "돌로르"];
+// 콘텐츠 일정(content_schedules.server_name)과 길드원(guild_members.server) 양쪽에서
+// 공유하는 서버 목록. 이 둘은 서로 무관한 독립 필드다 — 같은 값 집합을 쓸 뿐이다.
+export const SERVERS = ["메투스", "살루스", "돌로르", "호노르", "피데스", "모르스"];
 
 export const bossTierLabels: Record<(typeof bossTiers)[number], string> = {
   none: "없음",

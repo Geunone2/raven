@@ -47,7 +47,7 @@ export default async function AttendancePage() {
       <AttendanceCheckinPanel
         schedules={schedules}
         myCheckinByScheduleId={myCheckinByScheduleId}
-        myGuildName={self?.guildName ?? null}
+        myServer={self?.server ?? null}
         rosterByScheduleId={rosterByScheduleId}
       />
     </div>

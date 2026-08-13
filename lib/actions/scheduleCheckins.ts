@@ -19,7 +19,6 @@ import {
   type ScheduleCheckinResult,
 } from "@/lib/constants/schedules";
 import type { contentTypes } from "@/lib/db/schema";
-import { getGuildServer } from "@/lib/constants/members";
 import { attendanceStatusLabels } from "@/lib/constants/attendance";
 import { getCurrentBiweekRange } from "@/lib/time";
 
@@ -186,11 +185,11 @@ export async function setMyScheduleCheckin(
     .select()
     .from(guildMembers)
     .where(eq(guildMembers.id, memberId));
-  const myServer = member ? getGuildServer(member.guildName) : null;
+  const myServer = member?.server ?? null;
   if (schedule.serverName && myServer && schedule.serverName !== myServer) {
     return {
       ok: false,
-      message: `${member?.guildName}(${myServer}) 소속은 ${schedule.serverName} 서버 일정에 출석할 수 없습니다.`,
+      message: `${myServer} 서버 소속은 ${schedule.serverName} 서버 일정에 출석할 수 없습니다.`,
     };
   }
 

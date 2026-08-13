@@ -64,6 +64,7 @@ function parseMemberForm(formData: FormData) {
   return {
     nickname: String(formData.get("nickname") ?? "").trim(),
     guildName: String(formData.get("guildName") ?? "").trim() || null,
+    server: String(formData.get("server") ?? "").trim() || null,
     className: String(formData.get("className") ?? "").trim(),
     level: Number(formData.get("level") ?? 0),
     attack: Number(formData.get("attack") ?? 0),
@@ -129,6 +130,7 @@ export async function updateOwnStats(
     .update(guildMembers)
     .set({
       guildName: String(formData.get("guildName") ?? "").trim() || null,
+      server: String(formData.get("server") ?? "").trim() || null,
       className: String(formData.get("className") ?? "").trim(),
       characterType: (characterTypes as readonly string[]).includes(characterType)
         ? characterType

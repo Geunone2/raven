@@ -1,5 +1,6 @@
 import { GuildMember, guildMemberRoles } from "@/lib/db/schema";
 import { roleLabels } from "@/lib/constants/members";
+import { SERVERS } from "@/lib/constants/schedules";
 import { FormField } from "@/components/molecules/FormField";
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
@@ -34,14 +35,26 @@ export function MemberForm({
         </FormField>
       </div>
 
-      <FormField label="길드명" htmlFor="guildName">
-        <Input
-          id="guildName"
-          name="guildName"
-          defaultValue={member.guildName ?? ""}
-          placeholder="리더1, 리더2 등"
-        />
-      </FormField>
+      <div className="grid grid-cols-2 gap-4">
+        <FormField label="길드명" htmlFor="guildName">
+          <Input
+            id="guildName"
+            name="guildName"
+            defaultValue={member.guildName ?? ""}
+            placeholder="리더1, 리더2 등"
+          />
+        </FormField>
+        <FormField label="서버" htmlFor="server">
+          <Select id="server" name="server" defaultValue={member.server ?? ""}>
+            <option value="">(미지정)</option>
+            {SERVERS.map((server) => (
+              <option key={server} value={server}>
+                {server}
+              </option>
+            ))}
+          </Select>
+        </FormField>
+      </div>
 
       <div className="grid grid-cols-4 gap-4">
         <FormField label="레벨" htmlFor="level">

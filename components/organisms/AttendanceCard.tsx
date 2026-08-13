@@ -9,7 +9,6 @@ import {
     getScheduleBasePoints,
     isScheduleCheckinClosed,
 } from "@/lib/constants/schedules";
-import {getGuildServer} from "@/lib/constants/members";
 import {hashTone} from "@/lib/colorHash";
 import {Badge} from "@/components/atoms/Badge";
 import {ScheduleCheckinButtons} from "@/components/atoms/ScheduleCheckinButtons";
@@ -17,14 +16,13 @@ import {ScheduleCheckinButtons} from "@/components/atoms/ScheduleCheckinButtons"
 export function AttendanceCard({
                                    schedules,
                                    myCheckinByScheduleId,
-                                   myGuildName,
+                                   myServer,
                                }: {
     schedules: ContentSchedule[];
     myCheckinByScheduleId: Map<number, ScheduleCheckin>;
-    myGuildName: string | null;
+    myServer: string | null;
 }) {
     const items = schedules.slice(0, 2);
-    const myServer = getGuildServer(myGuildName);
 
     return (
         <div className="w-full rounded-xl border border-edge bg-surface p-4 shadow-md min-h-100">

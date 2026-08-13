@@ -13,12 +13,12 @@ const ALL = "전체";
 export function AttendanceCheckinPanel({
   schedules,
   myCheckinByScheduleId,
-  myGuildName,
+  myServer,
   rosterByScheduleId,
 }: {
   schedules: ContentSchedule[];
   myCheckinByScheduleId: Map<number, ScheduleCheckin>;
-  myGuildName: string | null;
+  myServer: string | null;
   rosterByScheduleId: Map<number, ScheduleCheckinRosterEntry[]>;
 }) {
   const [serverFilter, setServerFilter] = useState(ALL);
@@ -63,7 +63,7 @@ export function AttendanceCheckinPanel({
       <ScheduleCheckinList
         schedules={filteredSchedules}
         myCheckinByScheduleId={myCheckinByScheduleId}
-        myGuildName={myGuildName}
+        myServer={myServer}
         rosterByScheduleId={rosterByScheduleId}
       />
     </div>

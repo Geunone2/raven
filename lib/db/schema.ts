@@ -15,6 +15,9 @@ export const guildMembers = sqliteTable("guild_members", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   nickname: text("nickname").notNull().unique(),
   guildName: text("guild_name"),
+  // 소속 서버. 예전엔 guildName으로부터 GUILD_SERVER_MAP을 거쳐 유추했으나(길드=서버
+  // 고정 가정), 실제로는 독립적인 값이라 별도 컬럼으로 분리했다(2026-08-13).
+  server: text("server"),
   passwordHash: text("password_hash").notNull(),
   className: text("class_name").notNull().default(""),
   characterType: text("character_type", { enum: characterTypes })

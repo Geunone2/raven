@@ -24,6 +24,7 @@ export function RankingTable({
           <tr>
             <th className="px-4 py-3 font-medium">순위</th>
             <th className="px-4 py-3 font-medium">닉네임</th>
+            <th className="px-4 py-3 font-medium">서버</th>
             <th className="px-4 py-3 font-medium">길드명</th>
             <th className="px-4 py-3 font-medium">클래스</th>
             <th className="px-4 py-3 font-medium">레벨</th>
@@ -44,6 +45,7 @@ export function RankingTable({
                   {member.nickname}
                 </Link>
               </td>
+              <td className="px-4 py-3 text-ink-faint">{member.server ?? "-"}</td>
               <td className="px-4 py-3 text-ink-faint">{member.guildName ?? "-"}</td>
               <td className="px-4 py-3">{member.className}</td>
               <td className="px-4 py-3">{member.level}</td>

@@ -9,6 +9,7 @@ import {
   characterTypeLabels,
   isStatsStale,
 } from "@/lib/constants/members";
+import { SERVERS } from "@/lib/constants/schedules";
 import { formatMonthDay } from "@/lib/time";
 import { FormField } from "@/components/molecules/FormField";
 import { Input } from "@/components/atoms/Input";
@@ -50,13 +51,21 @@ export function SelfProfileForm({
       </div>
 
       <form action={formAction} className="space-y-4">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <FormField label="길드명" htmlFor="guildName">
             <CustomSelect
               id="guildName"
               name="guildName"
               defaultValue={member.guildName ?? GUILD_NAMES[0]}
               options={GUILD_NAMES.map((name) => ({ value: name, label: name }))}
+            />
+          </FormField>
+          <FormField label="서버" htmlFor="server">
+            <CustomSelect
+              id="server"
+              name="server"
+              defaultValue={member.server ?? SERVERS[0]}
+              options={SERVERS.map((name) => ({ value: name, label: name }))}
             />
           </FormField>
           <FormField label="클래스" htmlFor="className">

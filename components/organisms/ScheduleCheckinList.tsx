@@ -8,7 +8,6 @@ import {
     getScheduleBasePoints,
     isScheduleCheckinClosed,
 } from "@/lib/constants/schedules";
-import {getGuildServer} from "@/lib/constants/members";
 import {hashTone} from "@/lib/colorHash";
 import {Badge} from "@/components/atoms/Badge";
 import {ScheduleCheckinButtons} from "@/components/atoms/ScheduleCheckinButtons";
@@ -18,12 +17,12 @@ import type {ScheduleCheckinRosterEntry} from "@/lib/actions/scheduleCheckins";
 export function ScheduleCheckinList({
                                         schedules,
                                         myCheckinByScheduleId,
-                                        myGuildName,
+                                        myServer,
                                         rosterByScheduleId,
                                     }: {
     schedules: ContentSchedule[];
     myCheckinByScheduleId: Map<number, ScheduleCheckin>;
-    myGuildName: string | null;
+    myServer: string | null;
     rosterByScheduleId: Map<number, ScheduleCheckinRosterEntry[]>;
 }) {
     if (schedules.length === 0) {
@@ -33,8 +32,6 @@ export function ScheduleCheckinList({
             </p>
         );
     }
-
-    const myServer = getGuildServer(myGuildName);
 
     return (
         <ul className="space-y-3">
@@ -106,7 +103,7 @@ export function ScheduleCheckinList({
 
                         {isServerMismatch && (
                             <p className="mt-2 text-xs text-danger">
-                                {myGuildName}({myServer}) 소속은 {schedule.serverName} 서버 일정에 출석할 수
+                                {myServer} 서버 소속은 {schedule.serverName} 서버 일정에 출석할 수
                                 없습니다.
                             </p>
                         )}

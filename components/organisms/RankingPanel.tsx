@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GuildMember } from "@/lib/db/schema";
 import { GUILD_NAMES, CLASS_NAMES } from "@/lib/constants/members";
+import { SERVERS } from "@/lib/constants/schedules";
 import { getClassTone } from "@/lib/constants/classes";
 import { Badge, type Tone } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
@@ -42,6 +43,7 @@ function FilterChip({
 export function RankingPanel({ members }: { members: GuildMember[] }) {
   const [queryInput, setQueryInput] = useState("");
   const [query, setQuery] = useState("");
+  const [activeServer, setActiveServer] = useState(ALL);
   const [activeGuild, setActiveGuild] = useState(ALL);
   const [activeClass, setActiveClass] = useState(ALL);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -68,9 +70,10 @@ export function RankingPanel({ members }: { members: GuildMember[] }) {
       .filter(
         (member) => !trimmedQuery || member.nickname.toLowerCase().includes(trimmedQuery)
       )
+      .filter((member) => activeServer === ALL || member.server === activeServer)
       .filter((member) => activeGuild === ALL || member.guildName === activeGuild)
       .filter((member) => activeClass === ALL || member.className === activeClass);
-  }, [fullyRanked, query, activeGuild, activeClass]);
+  }, [fullyRanked, query, activeServer, activeGuild, activeClass]);
 
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
@@ -86,6 +89,11 @@ export function RankingPanel({ members }: { members: GuildMember[] }) {
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [hasMore]);
+
+  function selectServer(name: string) {
+    setActiveServer(name);
+    setVisibleCount(PAGE_SIZE);
+  }
 
   function selectGuild(name: string) {
     setActiveGuild(name);
@@ -120,6 +128,18 @@ export function RankingPanel({ members }: { members: GuildMember[] }) {
         </Button>
       </form>
 
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs text-ink-faint">서버</span>
+        {[ALL, ...SERVERS].map((name) => (
+          <FilterChip
+            key={name}
+            label={name}
+            tone={name === ALL ? "neutral" : hashTone(name)}
+            active={activeServer === name}
+            onClick={() => selectServer(name)}
+          />
+        ))}
+      </div>
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs text-ink-faint">길드</span>
         {[ALL, ...GUILD_NAMES].map((name) => (

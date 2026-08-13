@@ -19,6 +19,7 @@ export function MemberTable({ members }: { members: GuildMember[] }) {
         <thead className="bg-surface-raised text-ink-faint">
           <tr>
             <th className="px-4 py-3 font-medium">닉네임</th>
+            <th className="px-4 py-3 font-medium">서버</th>
             <th className="px-4 py-3 font-medium">길드명</th>
             <th className="px-4 py-3 font-medium">클래스</th>
             <th className="px-4 py-3 font-medium">레벨</th>
@@ -36,6 +37,7 @@ export function MemberTable({ members }: { members: GuildMember[] }) {
               <td className="px-4 py-3 font-medium text-ink">
                 {member.nickname}
               </td>
+              <td className="px-4 py-3 text-ink-faint">{member.server ?? "-"}</td>
               <td className="px-4 py-3 text-ink-faint">{member.guildName ?? "-"}</td>
               <td className="px-4 py-3">{member.className}</td>
               <td className="px-4 py-3">{member.level}</td>
