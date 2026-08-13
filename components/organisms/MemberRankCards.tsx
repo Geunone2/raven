@@ -11,7 +11,7 @@ const STATS: RankStat[] = ["total", "attack", "defense", "accuracy"];
 
 export function MemberRankCards({ positions }: { positions: MemberRankPositions }) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {STATS.map((stat) => {
         const { value, guildRank, guildCount, totalRank, totalCount } = positions[stat];
         return (

@@ -50,7 +50,7 @@ export function AuctionCard({
   }, [emblaApi]);
 
   return (
-    <div className="w-full rounded-xl border border-edge bg-surface p-4 shadow-md min-h-79">
+    <div className="w-full rounded-xl border border-edge bg-surface p-4 shadow-md min-h-100 lg:min-h-79">
       <div className="flex items-center justify-between">
         <p className="text-base font-bold text-brand">경매 (내판)</p>
         <Link href="/auctions" className="text-xs text-ink-muted hover:underline">

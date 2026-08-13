@@ -15,7 +15,7 @@ export function Header({ member }: { member: GuildMember | null }) {
           리더 길드
         </span>
       </Link>
-      <nav className="hidden items-center gap-6 text-sm text-ink-muted xl:flex">
+      <nav className="hidden items-center gap-6 text-sm text-ink-muted lg:flex">
         {NAV_LINKS.map((link) => (
           <Link key={link.href} href={link.href} className="hover:underline">
             {link.label}

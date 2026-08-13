@@ -12,7 +12,7 @@ export function MobileNav({ member }: { member: GuildMember | null }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="xl:hidden">
+    <div className="lg:hidden">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}

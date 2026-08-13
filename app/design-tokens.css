@@ -9,6 +9,20 @@
  * look — including the dark variant — can be retuned from this file alone.
  */
 @theme {
+  /* ─── breakpoint ───
+   * This project deliberately skips Tailwind's default `lg` (1024px) —
+   * iPad Pro 11 landscape (1194px) was getting misclassified as "PC" at that
+   * threshold, so every `lg:` in the app used to be written as `xl:` instead
+   * (see docs/handoff.md 6-5). Overriding `lg` to 1280px here (the old `xl`
+   * cutoff) sidesteps that bug while letting the codebase use the more
+   * conventional `sm`/`md`/`lg` names — `xl:` is no longer used anywhere in
+   * this app (all renamed to `lg:` together with this change, 2026-08-13).
+   * `md` also moves from Tailwind's default 768px to 744px per product call.
+   */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 744px; /* tablet */
+  --breakpoint-lg: 1280px; /* desktop */
+
   /* Page canvas — the <body> background, kept a separate token from
      --color-surface (card/panel background) so the two can diverge. In light
      theme they're both ~white so this is invisible; in dark theme canvas is
