@@ -19,7 +19,7 @@
 그동안 "사용자가 나중에 더 자세히 스펙을 주겠다"며 보류해뒀던 항목이었으나, 실제 코드(`app/(user)/auctions/page.tsx`, `AuctionFilterPanel`, `AuctionList`, `AuctionBidButtons`, `lib/actions/loots.ts`)를 확인한 결과 문서에 적힌 최소 스펙(진행중/종료/전체 + 길드 필터, 입찰/입찰취소, 마감 시 최고 전투력 자동 낙찰, 운영진 수동 override)과 실제 구현이 정확히 일치함을 확인했고, 사용자가 이 상태를 최종 완료로 확정했습니다. [06-auctions.md](./06-auctions.md)도 이에 맞춰 보류 경고를 제거했습니다.
 
 ### 다크모드 구현 완료 (2026-08-13)
-`app/design-tokens.css`에 `@media (prefers-color-scheme: dark)` + `:root[data-theme="dark"]` 두 경로로 다크 팔레트 오버라이드를 추가했습니다. 시스템 설정(`prefers-color-scheme`)을 자동으로 따르며, `[data-theme]` 쪽은 향후 수동 토글 UI를 붙일 때를 대비한 준비 작업으로 함께 넣어뒀을 뿐 **토글 UI 자체는 아직 없습니다**(시스템 설정 전용).
+`app/design-tokens.css`에 `@media (prefers-color-scheme: dark)` + `:root[data-theme="dark"]` 두 경로로 다크 팔레트 오버라이드를 추가했습니다. 기본은 시스템 설정(`prefers-color-scheme`)을 따르고, 헤더(데스크톱 네비 + 모바일 메뉴, 로그인/로그아웃 옆)의 토글 버튼으로 시스템 → 라이트 → 다크 순으로 수동 강제 선택도 가능합니다(2026-08-13 추가, `components/atoms/ThemeToggle.tsx`, `lib/theme.ts`). 선택값은 `localStorage`(`raven_theme`)에 저장되고, `app/layout.tsx`의 `beforeInteractive` 스크립트가 페인트 전에 반영해 깜빡임을 막습니다.
 
 진행 과정에서 시맨틱 토큰을 우회하던 raw Tailwind 컬러 클래스(`bg-white`, `text-black`, `text-white` 등)를 쓰던 파일 9개(`Button.tsx`, `ScheduleCheckinButtons.tsx`, `ScheduleCalendar.tsx`, `ScheduleCalendarView.tsx`, `NoticeFeed.tsx`, `ToastProvider.tsx`, `AuctionList.tsx`, `ScheduleCheckinList.tsx`, `RankingCard.tsx`)를 시맨틱 토큰으로 정리했습니다. 이 중 브랜드/상태색 버튼에 흰 글자를 입히던 `text-surface` 패턴은 `surface` 토큰이 다크모드에서 거의 검정으로 뒤집히면서 버튼 글자가 안 보이게 되는 문제가 있어, 새 토큰 `--color-ink-inverse`(고정 흰색, 라이트/다크 공용)를 만들어 분리했습니다.
 
@@ -27,7 +27,7 @@
 
 `CommunityCard.tsx`의 디스코드/카카오톡 버튼 색(`bg-[#5865F2]`, `bg-[#FEE500]` 등)은 의도적으로 그대로 뒀습니다 — 앱 테마가 아니라 외부 브랜드 고정 색상이라 다크모드와 무관합니다.
 
-수동 토글 스위치, `<html>`의 `color-scheme`이 `[data-theme]`에 따라 갈리도록 하는 부분(`app/globals.css`에 CSS는 준비해뒀지만 실제로 `data-theme` 속성을 설정하는 코드는 없음)은 후속 작업으로 남아있습니다.
+수동 토글 스위치는 위에 적힌 대로 완료됨(2026-08-13). `<html>`의 `color-scheme`도 `ThemeToggle`이 설정하는 `[data-theme]` 속성에 따라 `app/globals.css`의 `:root[data-theme="light|dark"]` 규칙이 자동으로 반영합니다.
 
 ### 커뮤니티 카드
 `docs/handoff.md`(2026-07-28 작성)에는 "순수 placeholder"라고 적혀 있지만, 실제로는 더 이상 사실이 아닙니다. `components/organisms/CommunityCard.tsx`를 직접 확인한 결과 디스코드/카카오톡 오픈채팅 2종(수다방/공지방) 링크가 모두 실제 URL로 연결되어 있습니다. `docs/handoff.md`는 이 부분이 갱신되지 않은 상태이니 주의하세요.

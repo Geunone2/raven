@@ -129,7 +129,7 @@ components/
 
 ### 6-1. 디자인 시스템 — 시맨틱 토큰만 사용
 
-`app/design-tokens.css`의 `@theme` 블록에 모든 색상이 정의되어 있고, 컴포넌트는 `bg-surface`, `text-ink`, `border-edge` 같은 **시맨틱 클래스만** 사용합니다. 원시 Tailwind 팔레트 클래스(`bg-blue-500` 등)나 `dark:` variant는 이 프로젝트에 없습니다 — 대신 다크모드는 같은 파일 하단의 `@media (prefers-color-scheme: dark)` / `:root[data-theme="dark"]` 블록에서 동일한 커스텀 프로퍼티를 재정의하는 방식으로 구현되어 있습니다(2026-08-13, 시스템 설정 전용, 수동 토글 UI는 아직 없음). 브랜드/상태색 버튼의 흰 글자는 `text-surface`가 아니라 `text-ink-inverse`(라이트/다크 공용 고정 흰색)를 씁니다 — `surface`는 다크모드에서 거의 검정으로 뒤집히므로 헷갈리지 마세요.
+`app/design-tokens.css`의 `@theme` 블록에 모든 색상이 정의되어 있고, 컴포넌트는 `bg-surface`, `text-ink`, `border-edge` 같은 **시맨틱 클래스만** 사용합니다. 원시 Tailwind 팔레트 클래스(`bg-blue-500` 등)나 `dark:` variant는 이 프로젝트에 없습니다 — 대신 다크모드는 같은 파일 하단의 `@media (prefers-color-scheme: dark)` / `:root[data-theme="dark"]` 블록에서 동일한 커스텀 프로퍼티를 재정의하는 방식으로 구현되어 있습니다(2026-08-13). 기본은 시스템 설정을 따르고, 헤더의 `ThemeToggle`(`components/atoms/ThemeToggle.tsx`)로 `<html data-theme="light|dark">`를 강제 지정해 수동 전환도 가능합니다(선택값은 `lib/theme.ts`를 통해 `localStorage`에 저장). 브랜드/상태색 버튼의 흰 글자는 `text-surface`가 아니라 `text-ink-inverse`(라이트/다크 공용 고정 흰색)를 씁니다 — `surface`는 다크모드에서 거의 검정으로 뒤집히므로 헷갈리지 마세요.
 
 현재 토큰 그룹:
 - 기본: surface/edge/ink/brand/danger/success/warning
@@ -259,20 +259,18 @@ curl -s -b cookies.txt -c cookies.txt -X POST http://localhost:3000/login \
 ## 9. 알려진 이슈 / 기술 부채
 
 1. **`lib/hooks/useLiveNow.ts`의 lint 에러는 더 이상 재현되지 않음(2026-08-13 확인)** — 이 문서엔 원래 "`pnpm lint` 실행 시 `react-hooks/set-state-in-effect` 에러가 항상 뜬다"고 적혀 있었는데, 이번 세션에 `pnpm lint`를 돌려보니 에러 0건(무관한 warning 4건만)이었습니다. 언제/왜 없어졌는지는 확인하지 않았으니, 관련 코드를 만질 일이 있으면 실제로 재현되는지 다시 확인하세요.
-2. **다크모드는 시스템 설정 전용** (2026-08-13 구현) — `prefers-color-scheme`만 따르고, 수동 토글 스위치 UI는 아직 없음. `design-tokens.css`에 `[data-theme]` 오버라이드 경로는 준비되어 있어 토글을 붙이는 작업 자체는 이미 쉬움 (6-1번 참고)
-3. **자동화 테스트 없음** — 모든 검증은 `tsc`/`lint` + 수동 curl 검증으로 진행됨
-4. **좁은 화면(모바일/태블릿) 반응형이 최신 대시보드 재배치 이후 실제 화면으로 검증되지 않음** (8-2번 참고) — 사용자가 가장 마지막에 진행하기로 함(2026-08-13)
-5. **커뮤니티(디스코드/오픈카카오톡) 카드는 실제 링크가 연결되어 있음, placeholder 아님** (`components/organisms/CommunityCard.tsx`) — 이 문서에 예전엔 "순수 placeholder"라고 적혀 있었으나 사실이 아니었음을 확인(2026-08-11 `docs/pages/00-roadmap.md`에서 먼저 정정됨)
+2. **자동화 테스트 없음** — 모든 검증은 `tsc`/`lint` + 수동 curl 검증으로 진행됨
+3. **좁은 화면(모바일/태블릿) 반응형이 최신 대시보드 재배치 이후 실제 화면으로 검증되지 않음** (8-2번 참고) — 사용자가 가장 마지막에 진행하기로 함(2026-08-13)
+4. **커뮤니티(디스코드/오픈카카오톡) 카드는 실제 링크가 연결되어 있음, placeholder 아님** (`components/organisms/CommunityCard.tsx`) — 이 문서에 예전엔 "순수 placeholder"라고 적혀 있었으나 사실이 아니었음을 확인(2026-08-11 `docs/pages/00-roadmap.md`에서 먼저 정정됨)
 
 ---
 
 ## 10. 다음에 할 만한 작업 (제안, 확정된 것 아님)
 
 - 좁은 화면 대시보드 레이아웃 실기기 검증 (가장 마지막에 진행하기로 함, 2026-08-13)
-- 다크모드 수동 토글 UI 추가 (현재는 시스템 설정 전용, CSS 쪽 `[data-theme]` 경로는 이미 준비됨)
 - 관리자 콘솔(`app/admin/**`) 전용 로드맵 문서 작성 (2026-08-13 기준 아직 없음, 사용자가 추후 진행하기로 함)
 
-완료됨: `/auctions` 스펙 확정(2026-08-13, [8-3번](#8-3-경매내판--auctioncard홈-auctionlist-auctions-전체보기) 참고) · 커뮤니티 카드 링크 연결 · 다크모드(시스템 설정 전용) 구현.
+완료됨: `/auctions` 스펙 확정(2026-08-13, [8-3번](#8-3-경매내판--auctioncard홈-auctionlist-auctions-전체보기) 참고) · 커뮤니티 카드 링크 연결 · 다크모드(시스템 설정 + 수동 토글 버튼, 2026-08-13) 구현.
 
 ---
 
