@@ -71,9 +71,11 @@ export function AuctionCard({
                 const hasMyBid = myBids.has(loot.id);
 
                 return (
-                  <div key={loot.id} className="min-w-0 shrink-0 grow-0 basis-full">
+                  // 마감 스탬프는 안쪽 div에만 opacity/grayscale를 걸고 바깥 div의
+                  // 형제로 뺐다 — 같이 걸면 스탬프까지 흐려져서 안 보이는 문제가 있었다.
+                  <div key={loot.id} className="relative min-w-0 shrink-0 grow-0 basis-full">
                     <div
-                      className={`relative rounded-md border p-3 text-xs ${
+                      className={`rounded-md border p-3 text-xs ${
                         imminent
                           ? "border-danger shadow-md shadow-danger/50"
                           : ended
@@ -81,9 +83,6 @@ export function AuctionCard({
                             : "border-edge"
                       }`}
                     >
-                      {ended && (
-                        <ClosedStampIcon className="absolute -top-2 -right-2 size-6 text-ink-faint drop-shadow-md" />
-                      )}
                       <div className="flex flex-wrap items-center gap-1.5">
                         <Badge tone={lootGradeTone[loot.grade]}>
                           {lootGradeLabels[loot.grade]}
@@ -128,6 +127,9 @@ export function AuctionCard({
                         />
                       </div>
                     </div>
+                    {ended && (
+                      <ClosedStampIcon className="absolute -top-2 -right-2 size-6 text-ink drop-shadow-md" />
+                    )}
                   </div>
                 );
               })}

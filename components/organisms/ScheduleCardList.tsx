@@ -47,7 +47,7 @@ export function ScheduleCardList({ schedules }: { schedules: ContentSchedule[] }
           return (
           <div
             key={schedule.id}
-            className="flex flex-col gap-3 rounded-xl border border-edge bg-[#ffffff] p-4 text-sm shadow-md sm:flex-row sm:items-center sm:gap-4"
+            className="flex flex-col gap-3 rounded-xl border border-edge bg-surface p-4 text-sm shadow-md sm:flex-row sm:items-center sm:gap-4"
           >
             <div className="flex items-baseline gap-2 sm:w-32 sm:shrink-0 sm:flex-col sm:items-start sm:gap-0.5">
               <span className="whitespace-nowrap font-semibold text-ink">{schedule.date}</span>

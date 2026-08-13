@@ -1,46 +1,39 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Monitor, Moon, Sun } from "lucide-react";
-import { applyTheme, readStoredTheme, storeTheme, type Theme } from "@/lib/theme";
-
-const NEXT_THEME: Record<Theme, Theme> = {
-  system: "light",
-  light: "dark",
-  dark: "system",
-};
+import { Moon, Sun } from "lucide-react";
+import { applyTheme, readStoredTheme, readSystemTheme, storeTheme, type Theme } from "@/lib/theme";
 
 const THEME_ICON: Record<Theme, typeof Sun> = {
-  system: Monitor,
   light: Sun,
   dark: Moon,
 };
 
 const THEME_LABEL: Record<Theme, string> = {
-  system: "시스템 설정",
   light: "라이트 모드",
   dark: "다크 모드",
 };
 
-// 마운트 전에는 서버와 동일하게 "system"으로 렌더링(하이드레이션 불일치 방지 —
-// lib/hooks/useLiveNow.ts와 동일한 패턴). 클릭할 때마다 시스템 → 라이트 → 다크 →
-// 시스템 순으로 순환하며, 선택값은 localStorage에 저장되어 다음 방문에도 유지된다.
+// 마운트 전에는 라이트 아이콘으로 렌더링(서버 렌더와 동일한 값 — 하이드레이션
+// 불일치 방지, lib/hooks/useLiveNow.ts와 동일한 패턴). 마운트 직후 저장된 선택이
+// 있으면 그 값으로, 없으면 시스템 설정으로 아이콘을 맞춘다. 클릭하면 라이트 ↔ 다크로만
+// 전환되고(시스템 옵션 없음), 그 순간부터는 시스템 설정과 무관하게 이 선택이 유지된다.
 export function ThemeToggle({ className = "" }: { className?: string }) {
-  const [theme, setTheme] = useState<Theme>("system");
+  const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // lib/hooks/useLiveNow.ts와 동일한 트릭: setTimeout(fn, 0)으로 한 틱 미뤄서
     // effect 본문에서 곧장 setState하는 걸 피한다(react-hooks/set-state-in-effect).
     const timeout = setTimeout(() => {
-      setTheme(readStoredTheme());
+      setTheme(readStoredTheme() ?? readSystemTheme());
       setMounted(true);
     }, 0);
     return () => clearTimeout(timeout);
   }, []);
 
   const handleClick = () => {
-    const next = NEXT_THEME[theme];
+    const next: Theme = theme === "light" ? "dark" : "light";
     setTheme(next);
     storeTheme(next);
     applyTheme(next);

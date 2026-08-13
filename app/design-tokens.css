@@ -9,6 +9,13 @@
  * look — including the dark variant — can be retuned from this file alone.
  */
 @theme {
+  /* Page canvas — the <body> background, kept a separate token from
+     --color-surface (card/panel background) so the two can diverge. In light
+     theme they're both ~white so this is invisible; in dark theme canvas is
+     tuned darker than surface so cards actually read as raised panels
+     instead of blending into the page (see body rule in globals.css). */
+  --color-canvas: #ffffff;
+
   /* Surfaces, layered by elevation */
   --color-surface: #ffffff;
   --color-surface-raised: #f6f7f9;
@@ -108,13 +115,14 @@
  */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-surface: #101012;
-    --color-surface-raised: #1a1a1d;
-    --color-surface-sunken: #0a0a0b;
-    --color-surface-hover: #232327;
+    --color-canvas: #08080a;
+    --color-surface: #1b1b1f;
+    --color-surface-raised: #232328;
+    --color-surface-sunken: #0d0d10;
+    --color-surface-hover: #2b2b32;
 
-    --color-edge: #2b2b30;
-    --color-edge-strong: #3d3d44;
+    --color-edge: #46464e;
+    --color-edge-strong: #5c5c66;
 
     --color-ink: #f2f2f4;
     --color-ink-muted: #a6a6ad;
@@ -161,13 +169,14 @@
 }
 
 :root[data-theme="dark"] {
-  --color-surface: #101012;
-  --color-surface-raised: #1a1a1d;
-  --color-surface-sunken: #0a0a0b;
-  --color-surface-hover: #232327;
+  --color-canvas: #08080a;
+  --color-surface: #1b1b1f;
+  --color-surface-raised: #232328;
+  --color-surface-sunken: #0d0d10;
+  --color-surface-hover: #2b2b32;
 
-  --color-edge: #2b2b30;
-  --color-edge-strong: #3d3d44;
+  --color-edge: #46464e;
+  --color-edge-strong: #5c5c66;
 
   --color-ink: #f2f2f4;
   --color-ink-muted: #a6a6ad;
