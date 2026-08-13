@@ -4,6 +4,7 @@ import { GuildMember } from "@/lib/db/schema";
 import { logout } from "@/lib/actions/auth";
 import { NAV_LINKS } from "@/lib/constants/nav";
 import { MobileNav } from "@/components/organisms/MobileNav";
+import { ThemeToggle } from "@/components/atoms/ThemeToggle";
 
 export function Header({ member }: { member: GuildMember | null }) {
   return (
@@ -31,6 +32,7 @@ export function Header({ member }: { member: GuildMember | null }) {
             로그인
           </Link>
         )}
+        <ThemeToggle />
       </nav>
       <MobileNav member={member} />
     </header>

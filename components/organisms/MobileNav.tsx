@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import { GuildMember } from "@/lib/db/schema";
 import { logout } from "@/lib/actions/auth";
 import { NAV_LINKS } from "@/lib/constants/nav";
+import { ThemeToggle } from "@/components/atoms/ThemeToggle";
 
 export function MobileNav({ member }: { member: GuildMember | null }) {
   const [open, setOpen] = useState(false);
@@ -33,24 +34,27 @@ export function MobileNav({ member }: { member: GuildMember | null }) {
               {link.label}
             </Link>
           ))}
-          {member ? (
-            <form action={logout}>
-              <button
-                type="submit"
-                className="w-full rounded-md px-3 py-2 text-left hover:bg-surface-hover"
+          <div className="flex items-center justify-between gap-2">
+            {member ? (
+              <form action={logout} className="flex-1">
+                <button
+                  type="submit"
+                  className="w-full rounded-md px-3 py-2 text-left hover:bg-surface-hover"
+                >
+                  로그아웃 ({member.nickname})
+                </button>
+              </form>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="flex-1 rounded-md px-3 py-2 hover:bg-surface-hover"
               >
-                로그아웃 ({member.nickname})
-              </button>
-            </form>
-          ) : (
-            <Link
-              href="/login"
-              onClick={() => setOpen(false)}
-              className="rounded-md px-3 py-2 hover:bg-surface-hover"
-            >
-              로그인
-            </Link>
-          )}
+                로그인
+              </Link>
+            )}
+            <ThemeToggle />
+          </div>
         </nav>
       )}
     </div>
