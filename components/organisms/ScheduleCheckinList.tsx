@@ -51,7 +51,7 @@ export function ScheduleCheckinList({
                 return (
                     <li
                         key={schedule.id}
-                        className="rounded-xl border border-edge bg-white p-4 shadow-md"
+                        className="rounded-xl border border-edge bg-surface p-4 shadow-md"
                     >
                         <div className="flex flex-row justify-between">
                             <div className="flex flex-wrap items-center gap-1.5">

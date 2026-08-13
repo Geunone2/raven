@@ -17,10 +17,10 @@ const TOAST_DURATION_MS = 2000;
 const MAX_VISIBLE_TOASTS = 2;
 
 const TONE_CLASSES: Record<ToastTone, string> = {
-  success: "border-success bg-white text-success",
-  danger: "border-danger bg-white text-danger",
-  info: "border-info bg-white text-info",
-  brand: "border-brand bg-white text-brand",
+  success: "border-success bg-surface text-success",
+  danger: "border-danger bg-surface text-danger",
+  info: "border-info bg-surface text-info",
+  brand: "border-brand bg-surface text-brand",
 };
 
 const ToastContext = createContext<{

@@ -14,9 +14,9 @@ const STATUS_TONE_CLASSES: Record<(typeof attendanceStatuses)[number], string> =
 };
 
 const STATUS_ACTIVE_CLASSES: Record<(typeof attendanceStatuses)[number], string> = {
-  checked_in: "border-success bg-success text-surface",
-  mid_join: "border-info bg-info text-surface",
-  cancelled: "border-danger bg-danger text-surface",
+  checked_in: "border-success bg-success text-ink-inverse",
+  mid_join: "border-info bg-info text-ink-inverse",
+  cancelled: "border-danger bg-danger text-ink-inverse",
 };
 
 // 토스트 색상은 눌린 버튼 자체의 색상(출석=success/초록, 중간합류=info/파랑,

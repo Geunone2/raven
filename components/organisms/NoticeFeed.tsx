@@ -110,7 +110,7 @@ export function NoticeFeed({
               onClick={() => setCategory(option.value)}
               className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
                 category === option.value
-                  ? "bg-brand text-white"
+                  ? "bg-brand text-ink-inverse"
                   : "bg-surface-hover text-ink-muted hover:bg-edge"
               }`}
             >

@@ -42,7 +42,7 @@ export function RankingCard({
 }) {
   return (
     <div className="w-full rounded-xl border border-edge bg-surface p-4 shadow-md min-h-80">
-      <p className="flex items-center gap-1.5 text-base font-bold text-black">
+      <p className="flex items-center gap-1.5 text-base font-bold text-ink">
         <Image src={STAT_ICONS[stat]} alt="" width={20} height={20} className="size-5" />
         {STAT_LABELS[stat]}{" "}
         <span className={STAT_ACCENT_CLASSES[stat]}>TOP {topCount}</span>

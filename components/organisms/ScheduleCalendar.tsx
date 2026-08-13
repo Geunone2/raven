@@ -57,7 +57,7 @@ export function ScheduleCalendar({
           month_grid: "w-full table-fixed border-collapse",
           weekday: "pb-1 text-center text-xs font-normal text-ink-faint",
           day: "p-0.5 text-center [&>button]:aspect-square [&>button]:w-full [&>button]:rounded-md [&>button]:text-sm [&>button]:text-ink [&>button]:hover:bg-surface-hover",
-          selected: "[&>button]:bg-brand [&>button]:text-surface [&>button]:hover:bg-brand-bright",
+          selected: "[&>button]:bg-brand [&>button]:text-ink-inverse [&>button]:hover:bg-brand-bright",
           today: "[&>button]:font-bold [&>button]:text-brand",
           outside: "[&>button]:text-ink-faint/50",
         }}

@@ -3,10 +3,10 @@ import { ButtonHTMLAttributes } from "react";
 type Variant = "primary" | "secondary" | "danger";
 
 const variantClasses: Record<Variant, string> = {
-  primary: "bg-brand text-surface font-semibold hover:bg-brand-bright",
+  primary: "bg-brand text-ink-inverse font-semibold hover:bg-brand-bright",
   secondary:
     "border border-edge-strong text-ink hover:border-brand/60 hover:text-brand-bright",
-  danger: "bg-danger-strong text-surface hover:bg-danger",
+  danger: "bg-danger-strong text-ink-inverse hover:bg-danger",
 };
 
 const sizeClasses = {

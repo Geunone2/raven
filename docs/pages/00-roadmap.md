@@ -1,16 +1,11 @@
-# 로드맵 / 남은 작업 (2026-08-11 기준)
+# 로드맵 / 남은 작업 (2026-08-13 기준)
 
 실제 코드 상태를 확인해서 작성한 "지금 무엇이 끝났고 무엇이 남았는지" 목록입니다. 제안이나 의사결정 문서가 아니라 현황 인벤토리이며, 리팩토링을 시작하기 전에 가장 먼저 읽어야 할 문서입니다.
 
-## 보류 중 (임의로 손대지 말 것)
-
-### `/auctions` — 경매 참여 페이지
-[06-auctions.md](./06-auctions.md) 참고. 사용자가 "나중에 더 자세히 스펙을 주겠다"고 명시적으로 보류한 상태입니다. 지금 구현은 최소 기능(입찰/입찰취소, 마감 시 최고 전투력 자동 낙찰 + 운영진 수동 override)뿐이며, 요청 없이 UI/로직을 확장하지 마세요.
-
 ## 미구현
 
-### 다크모드
-`app/design-tokens.css` 2번째 줄 주석에 `Design tokens — light theme (dark mode planned as a follow-up)`이라고만 적혀 있고, 실제로 `@media (prefers-color-scheme: dark)`나 `[data-theme]` 오버라이드는 파일 전체에 하나도 없습니다(직접 grep으로 확인). 라이트 테마 전용 토큰만 존재합니다.
+### 좁은 화면(모바일/태블릿) 반응형 실기기 검증
+대시보드가 `grid-cols-12` 2행 레이아웃으로 재배치된 이후, `sm`/`md`/`xl` 각 브레이크포인트가 실제 화면에서 검증된 적이 없습니다(브라우저 도구 없이 작업). `xl` 기준으로만 확인되었고, 통장 페이지의 새 차트(`NetTreasuryChart` 등)를 포함해 이번 세션에 추가된 모든 화면이 동일하게 미검증 상태입니다. **의도적으로 가장 마지막에 진행하기로 함(2026-08-13, 사용자 지시).**
 
 ### 자동화 테스트
 `package.json`에 `test` 스크립트가 없고 vitest/jest/playwright/cypress 등 테스트 프레임워크 의존성도 없습니다. 검증은 지금도 `tsc --noEmit` + `pnpm lint` + 로그인 세션을 실제로 띄운 뒤 curl로 서버 액션을 호출해 DB 결과를 확인하는 수동 방식으로만 이루어집니다(`docs/handoff.md` 6-6번 참고).
@@ -19,6 +14,20 @@
 대시보드가 `grid-cols-12` 2행 레이아웃으로 재배치된 이후, `sm`/`md`/`xl` 각 브레이크포인트가 실제 화면에서 검증된 적이 없습니다(브라우저 도구 없이 작업). `xl` 기준으로만 확인되었고, 통장 페이지의 새 차트(`NetTreasuryChart` 등)를 포함해 이번 세션에 추가된 모든 화면이 동일하게 미검증 상태입니다.
 
 ## 최근 세션에서 정리/확인된 항목 (더 이상 이슈 아님)
+
+### `/auctions` — 경매 참여 페이지 완료 확정 (2026-08-13)
+그동안 "사용자가 나중에 더 자세히 스펙을 주겠다"며 보류해뒀던 항목이었으나, 실제 코드(`app/(user)/auctions/page.tsx`, `AuctionFilterPanel`, `AuctionList`, `AuctionBidButtons`, `lib/actions/loots.ts`)를 확인한 결과 문서에 적힌 최소 스펙(진행중/종료/전체 + 길드 필터, 입찰/입찰취소, 마감 시 최고 전투력 자동 낙찰, 운영진 수동 override)과 실제 구현이 정확히 일치함을 확인했고, 사용자가 이 상태를 최종 완료로 확정했습니다. [06-auctions.md](./06-auctions.md)도 이에 맞춰 보류 경고를 제거했습니다.
+
+### 다크모드 구현 완료 (2026-08-13)
+`app/design-tokens.css`에 `@media (prefers-color-scheme: dark)` + `:root[data-theme="dark"]` 두 경로로 다크 팔레트 오버라이드를 추가했습니다. 시스템 설정(`prefers-color-scheme`)을 자동으로 따르며, `[data-theme]` 쪽은 향후 수동 토글 UI를 붙일 때를 대비한 준비 작업으로 함께 넣어뒀을 뿐 **토글 UI 자체는 아직 없습니다**(시스템 설정 전용).
+
+진행 과정에서 시맨틱 토큰을 우회하던 raw Tailwind 컬러 클래스(`bg-white`, `text-black`, `text-white` 등)를 쓰던 파일 9개(`Button.tsx`, `ScheduleCheckinButtons.tsx`, `ScheduleCalendar.tsx`, `ScheduleCalendarView.tsx`, `NoticeFeed.tsx`, `ToastProvider.tsx`, `AuctionList.tsx`, `ScheduleCheckinList.tsx`, `RankingCard.tsx`)를 시맨틱 토큰으로 정리했습니다. 이 중 브랜드/상태색 버튼에 흰 글자를 입히던 `text-surface` 패턴은 `surface` 토큰이 다크모드에서 거의 검정으로 뒤집히면서 버튼 글자가 안 보이게 되는 문제가 있어, 새 토큰 `--color-ink-inverse`(고정 흰색, 라이트/다크 공용)를 만들어 분리했습니다.
+
+또한 `public/closed-icon.svg`(경매 마감 스탬프)가 색이 고정된(검정) `<Image>` 자산이라 다크모드 카드 배경에서 안 보이는 문제가 있어, `BankIcons.tsx`와 동일한 방식(`fill="currentColor"` 인라인 SVG)으로 `components/atoms/ClosedStampIcon.tsx`를 새로 만들어 `AuctionList.tsx`/`AuctionCard.tsx`에서 교체했습니다.
+
+`CommunityCard.tsx`의 디스코드/카카오톡 버튼 색(`bg-[#5865F2]`, `bg-[#FEE500]` 등)은 의도적으로 그대로 뒀습니다 — 앱 테마가 아니라 외부 브랜드 고정 색상이라 다크모드와 무관합니다.
+
+수동 토글 스위치, `<html>`의 `color-scheme`이 `[data-theme]`에 따라 갈리도록 하는 부분(`app/globals.css`에 CSS는 준비해뒀지만 실제로 `data-theme` 속성을 설정하는 코드는 없음)은 후속 작업으로 남아있습니다.
 
 ### 커뮤니티 카드
 `docs/handoff.md`(2026-07-28 작성)에는 "순수 placeholder"라고 적혀 있지만, 실제로는 더 이상 사실이 아닙니다. `components/organisms/CommunityCard.tsx`를 직접 확인한 결과 디스코드/카카오톡 오픈채팅 2종(수다방/공지방) 링크가 모두 실제 URL로 연결되어 있습니다. `docs/handoff.md`는 이 부분이 갱신되지 않은 상태이니 주의하세요.

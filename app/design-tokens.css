@@ -1,10 +1,12 @@
 /*
- * Design tokens — light theme (dark mode planned as a follow-up).
+ * Design tokens — light theme is the default set in the @theme block below;
+ * the dark theme overrides live further down this file as plain CSS custom
+ * property reassignments (Tailwind's @theme block itself can't be
+ * conditional). See the bottom of this file for details.
  *
  * Components reference these semantic tokens (bg-surface, text-ink,
  * border-edge, ...) instead of raw palette utilities, so the whole
- * look — including a future dark variant — can be retuned from this
- * file alone.
+ * look — including the dark variant — can be retuned from this file alone.
  */
 @theme {
   /* Surfaces, layered by elevation */
@@ -21,6 +23,12 @@
   --color-ink: #18181b;
   --color-ink-muted: #52525b;
   --color-ink-faint: #71717a;
+  /* Fixed near-white text for use on saturated accent surfaces (brand/
+     success/info/danger buttons, selected calendar day, ...). Deliberately
+     NOT reusing --color-surface for this — surface flips to a near-black
+     page background in dark mode, which would turn these buttons'
+     "text-surface" into unreadable dark-on-dark text. */
+  --color-ink-inverse: #ffffff;
 
   /* Brand accent — guild gold, darkened for contrast on a white surface */
   --color-brand: #9c7a1f;
@@ -72,4 +80,134 @@
   --color-content-rift: #4d7c0f;
   --color-content-ancient-fortress: #57534e;
   --color-content-other: #475569;
+}
+
+/*
+ * Dark theme overrides.
+ *
+ * Tailwind's @theme block above only ever holds the light values (it's what
+ * Tailwind reads to generate the bg-surface/text-ink/... utilities and the
+ * default variable values). To retheme at runtime we reassign the same
+ * custom properties here, in plain CSS, under two selectors:
+ *
+ * - `@media (prefers-color-scheme: dark)` + `:root:not([data-theme="light"])`
+ *   → follows the OS/browser preference automatically.
+ * - `:root[data-theme="dark"]`
+ *   → lets a future manual theme toggle force dark regardless of OS
+ *   preference (no toggle UI exists yet — this selector is unused until one
+ *   is added, but costs nothing to have ready).
+ *
+ * Utilities like bg-surface compile to `background-color: var(--color-surface)`,
+ * so they automatically pick up whichever value wins the cascade — no
+ * component changes needed beyond avoiding raw palette classes (see below).
+ *
+ * Values generally follow "light theme's 600/700/800-shade colors become the
+ * matching 400-shade on dark surfaces" — the standard adjustment for keeping
+ * saturated accent colors legible against a near-black background instead of
+ * reading as muddy/low-contrast.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-surface: #101012;
+    --color-surface-raised: #1a1a1d;
+    --color-surface-sunken: #0a0a0b;
+    --color-surface-hover: #232327;
+
+    --color-edge: #2b2b30;
+    --color-edge-strong: #3d3d44;
+
+    --color-ink: #f2f2f4;
+    --color-ink-muted: #a6a6ad;
+    --color-ink-faint: #7a7a82;
+
+    --color-brand: #c99a2e;
+    --color-brand-bright: #dcb047;
+
+    --color-danger: #f87171;
+    --color-danger-strong: #dc2626;
+    --color-success: #4ade80;
+    --color-warning: #fbbf24;
+    --color-info: #60a5fa;
+
+    --color-rank-total: #a78bfa;
+    --color-rank-attack: #f87171;
+    --color-rank-defense: #60a5fa;
+    --color-rank-accuracy: #facc15;
+
+    --color-grade-legendary: #facc15;
+    --color-grade-hero: #c084fc;
+    --color-grade-rare: #60a5fa;
+
+    --color-category-weapon: #fb7185;
+    --color-category-armor: #22d3ee;
+    --color-category-accessory: #f472b6;
+    --color-category-heavenstone: #2dd4bf;
+    --color-category-skillbook: #fbbf24;
+    --color-category-other: #94a3b8;
+
+    --color-swatch-1: #818cf8;
+    --color-swatch-2: #e879f9;
+    --color-swatch-3: #a3e635;
+    --color-swatch-4: #38bdf8;
+    --color-swatch-5: #fb923c;
+
+    --color-content-guild-dungeon: #818cf8;
+    --color-content-abyss: #fb7185;
+    --color-content-field-boss: #fb923c;
+    --color-content-rift: #a3e635;
+    --color-content-ancient-fortress: #a8a29e;
+    --color-content-other: #94a3b8;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-surface: #101012;
+  --color-surface-raised: #1a1a1d;
+  --color-surface-sunken: #0a0a0b;
+  --color-surface-hover: #232327;
+
+  --color-edge: #2b2b30;
+  --color-edge-strong: #3d3d44;
+
+  --color-ink: #f2f2f4;
+  --color-ink-muted: #a6a6ad;
+  --color-ink-faint: #7a7a82;
+
+  --color-brand: #c99a2e;
+  --color-brand-bright: #dcb047;
+
+  --color-danger: #f87171;
+  --color-danger-strong: #dc2626;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-info: #60a5fa;
+
+  --color-rank-total: #a78bfa;
+  --color-rank-attack: #f87171;
+  --color-rank-defense: #60a5fa;
+  --color-rank-accuracy: #facc15;
+
+  --color-grade-legendary: #facc15;
+  --color-grade-hero: #c084fc;
+  --color-grade-rare: #60a5fa;
+
+  --color-category-weapon: #fb7185;
+  --color-category-armor: #22d3ee;
+  --color-category-accessory: #f472b6;
+  --color-category-heavenstone: #2dd4bf;
+  --color-category-skillbook: #fbbf24;
+  --color-category-other: #94a3b8;
+
+  --color-swatch-1: #818cf8;
+  --color-swatch-2: #e879f9;
+  --color-swatch-3: #a3e635;
+  --color-swatch-4: #38bdf8;
+  --color-swatch-5: #fb923c;
+
+  --color-content-guild-dungeon: #818cf8;
+  --color-content-abyss: #fb7185;
+  --color-content-field-boss: #fb923c;
+  --color-content-rift: #a3e635;
+  --color-content-ancient-fortress: #a8a29e;
+  --color-content-other: #94a3b8;
 }

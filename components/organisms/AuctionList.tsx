@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { ContentSchedule, GuildMember, Loot, LootBid } from "@/lib/db/schema";
 import {
   getAuctionWinner,
@@ -15,6 +14,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { TimerIcon } from "@/components/atoms/TimerIcon";
 import { LootBidCountdown } from "@/components/atoms/LootBidCountdown";
 import { AuctionBidButtons } from "@/components/atoms/AuctionBidButtons";
+import { ClosedStampIcon } from "@/components/atoms/ClosedStampIcon";
 
 export function AuctionList({
   rows,
@@ -50,7 +50,7 @@ export function AuctionList({
         return (
           <li
             key={loot.id}
-            className={`relative rounded-xl border bg-white p-4 shadow-md transition-opacity ${
+            className={`relative rounded-xl border bg-surface p-4 shadow-md transition-opacity ${
               imminent
                 ? "border-danger shadow-lg shadow-danger/50"
                 : ended
@@ -59,13 +59,7 @@ export function AuctionList({
             }`}
           >
             {ended && (
-              <Image
-                src="/closed-icon.svg"
-                alt="마감"
-                width={120}
-                height={120}
-                className="absolute -top-2.5 -right-14 drop-shadow-md"
-              />
+              <ClosedStampIcon className="absolute -top-2.5 -right-14 size-30 text-ink-faint drop-shadow-md" />
             )}
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">

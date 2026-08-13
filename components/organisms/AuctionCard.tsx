@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -20,6 +19,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { TimerIcon } from "@/components/atoms/TimerIcon";
 import { LootBidCountdown } from "@/components/atoms/LootBidCountdown";
 import { AuctionBidButtons } from "@/components/atoms/AuctionBidButtons";
+import { ClosedStampIcon } from "@/components/atoms/ClosedStampIcon";
 
 export function AuctionCard({
   rows,
@@ -82,13 +82,7 @@ export function AuctionCard({
                       }`}
                     >
                       {ended && (
-                        <Image
-                          src="/closed-icon.svg"
-                          alt="마감"
-                          width={24}
-                          height={24}
-                          className="absolute -top-2 -right-2 drop-shadow-md"
-                        />
+                        <ClosedStampIcon className="absolute -top-2 -right-2 size-6 text-ink-faint drop-shadow-md" />
                       )}
                       <div className="flex flex-wrap items-center gap-1.5">
                         <Badge tone={lootGradeTone[loot.grade]}>
