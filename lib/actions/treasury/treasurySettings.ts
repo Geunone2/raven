@@ -1,9 +1,9 @@
 "use server";
 
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db/client";
-import { treasurySettings } from "@/lib/db/schema";
+import { NOW_UTC_TEXT, treasurySettings } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/auth/adminSession";
 
 // 정산 비율은 딱 하나의 행(싱글턴)으로만 관리한다. 아직 한 번도 저장한 적이
@@ -38,7 +38,7 @@ export async function updateTreasurySettings(formData: FormData) {
         current.participationRewardRatio
       ),
       powerRewardRatio: parsePercent(formData, "powerRewardRatio", current.powerRewardRatio),
-      updatedAt: sql`(current_timestamp)`,
+      updatedAt: NOW_UTC_TEXT,
     })
     .where(eq(treasurySettings.id, current.id));
 

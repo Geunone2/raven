@@ -21,7 +21,7 @@
 |---|---|
 | Node.js | 20 이상 권장 (`@types/node`가 v20 기준) |
 | [pnpm](https://pnpm.io/) | 패키지 매니저 — 이 프로젝트는 `pnpm-lock.yaml`을 기준으로 관리됩니다 |
-| SQLite | 별도 설치 불필요 — `better-sqlite3`가 파일 기반으로 동작 |
+| [Supabase](https://supabase.com/) 프로젝트 | Postgres DB — 무료 플랜으로 충분. Settings → Database에서 Transaction/Session pooler 연결 문자열을 받아둡니다 |
 
 ## 설치 방법
 
@@ -32,16 +32,18 @@
 
 2. **환경 변수 설정** — 저장소에 값이 커밋되어 있지 않으므로 루트에 `.env.local`을 직접 만들어야 합니다(작업 중인 팀/현재 담당자에게 실제 값을 전달받으세요):
    ```bash
-   SESSION_SECRET=      # 길드원 로그인 세션 서명용 임의의 긴 문자열
-   ADMIN_EMAIL=         # /admin 로그인 계정 이메일
-   ADMIN_PASSWORD=      # /admin 로그인 계정 비밀번호
+   SESSION_SECRET=            # 길드원 로그인 세션 서명용 임의의 긴 문자열
+   ADMIN_EMAIL=               # /admin 로그인 계정 이메일
+   ADMIN_PASSWORD=            # /admin 로그인 계정 비밀번호
+   NEXT_TRANSACTION_POOLER=   # Supabase Transaction pooler 연결 문자열(포트 6543) — 앱 런타임 쿼리용
+   NEXT_SESSION_POOLER=       # Supabase Session/Direct 연결 문자열(포트 5432) — 마이그레이션(drizzle-kit)용
    ```
 
 3. **DB 마이그레이션 적용**
    ```bash
    pnpm db:migrate
    ```
-   `data/raven.db` (gitignore 대상, 로컬 전용)에 SQLite 파일이 생성/갱신됩니다.
+   `lib/db/migrations/`의 마이그레이션을 Supabase Postgres에 적용합니다.
 
 4. **개발 서버 실행**
    ```bash
@@ -69,7 +71,7 @@ pnpm db:migrate         # 생성된 마이그레이션을 DB에 적용
 
 - **프레임워크**: Next.js 16 (App Router, Turbopack) + React 19 + TypeScript
 - **스타일**: Tailwind CSS 4 (시맨틱 디자인 토큰, 다크모드 지원)
-- **DB**: SQLite (`better-sqlite3`) + Drizzle ORM
+- **DB**: Supabase(Postgres) + Drizzle ORM(`drizzle-orm/postgres-js`) — Vercel 배포 전제로 SQLite에서 이관(2026-08-15)
 - **주요 라이브러리**: Tiptap(리치 텍스트 에디터), Recharts(통계 차트), Embla Carousel, react-day-picker, xlsx(엑셀 내보내기)
 
 ## 프로젝트 구조
@@ -93,12 +95,20 @@ docs/               # 상세 문서 (아래 참고)
 
 `components`/`lib` 모두 **기능(도메인)별 폴더 구조**를 따릅니다 — 특정 도메인 하나에서만 쓰이는 파일은 크기와 상관없이 그 도메인 폴더 안에 둡니다(순수하게 범용인 것만 최상위 `atoms`/`lib` 루트에 남습니다).
 
+## 배포 (Vercel)
+
+1. [vercel.com](https://vercel.com)에서 이 GitHub 저장소를 Import
+2. Vercel 프로젝트의 Environment Variables에 `.env.local`과 동일한 5개 값(`SESSION_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `NEXT_TRANSACTION_POOLER`, `NEXT_SESSION_POOLER`)을 등록
+3. 배포 — DB는 Supabase가 상시 관리하므로 별도 서버를 계속 켜둘 필요가 없습니다. Postgres 자체가 SQLite 파일 DB와 달리 Vercel의 서버리스/에페메럴 파일시스템과 무관하게 동작합니다.
+4. 스키마를 바꿨다면 배포 전에 로컬에서 `pnpm db:generate && pnpm db:migrate`로 Supabase DB에 마이그레이션을 먼저 적용해야 합니다(Vercel 빌드가 자동으로 마이그레이션을 실행하진 않습니다).
+
 ## 문제 해결
 
 | 증상 | 원인/해결 |
 |---|---|
 | `pnpm dev` 실행 후 로그인/관리자 로그인이 실패함 | `.env.local`의 `SESSION_SECRET`/`ADMIN_EMAIL`/`ADMIN_PASSWORD`가 비어있거나 잘못됨 |
-| DB 관련 에러 (`no such table` 등) | `pnpm db:migrate`를 아직 안 돌렸거나, `lib/db/schema.ts`를 바꾼 뒤 `pnpm db:generate`로 마이그레이션 파일을 새로 만들지 않음 |
+| DB 관련 에러 (`relation "..." does not exist` 등) | `pnpm db:migrate`를 아직 안 돌렸거나, `lib/db/schema.ts`를 바꾼 뒤 `pnpm db:generate`로 마이그레이션 파일을 새로 만들지 않음 |
+| `prepared statement "..." already exists` 같은 랜덤 DB 에러 | `NEXT_TRANSACTION_POOLER`로 접속할 때 postgres-js에 `{ prepare: false }`가 빠짐 — pgbouncer transaction 모드는 prepared statement 재사용이 안 됨(`lib/db/client.ts` 참고) |
 | 타입 에러가 낯선 Next.js API에서 발생 | 이 프로젝트의 Next.js는 breaking change가 있음 — `node_modules/next/dist/docs/`에서 해당 API 문서를 먼저 확인 |
 | 임포트 경로를 못 찾겠음 | `components`/`lib`는 도메인 폴더로 재구성되어 있음 — 위 "프로젝트 구조" 참고, 또는 파일명으로 검색 |
 
@@ -108,6 +118,7 @@ docs/               # 상세 문서 (아래 참고)
 
 별도 `CHANGELOG.md`는 아직 없고, 각 기능/리팩토링 단위로 커밋과 PR을 나눠 관리하고 있습니다 — `git log`와 GitHub PR 목록이 사실상의 변경 이력입니다. 최근 주요 변경:
 
+- DB를 SQLite(`better-sqlite3`)에서 Supabase(Postgres)로 이관, Vercel 배포 대응
 - 코드 리팩토링: `components`/`lib`를 기능별 폴더 구조로 재구성, 중복 코드 정리
 - 통장/정산 기능 개편: 정산 비율 관리자 설정, 콘텐츠 보상 정산 2단계 흐름, 탭 UI 재구성
 - 공지사항: Tiptap 리치 텍스트 에디터 도입, 필터/정렬 추가
