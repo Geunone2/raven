@@ -1,5 +1,12 @@
 import { AdminSidebar } from "@/components/organisms/layout/AdminSidebar";
 
+// 관리자 콘솔은 전부 실시간 보호된 데이터(통장 잔액, 길드원 목록 등)라 정적
+// prerender 대상이 되면 안 된다 — 실제로 이 설정이 없어서 next build가 페이지를
+// 빌드 시점에 미리 그리려다 DB에 접속을 시도했고, 빌드 환경(Vercel)에 DB 연결
+// 정보가 없어 "connect ECONNREFUSED 127.0.0.1:5432"로 빌드 자체가 실패했다
+// (2026-08-15). 레이아웃에서 강제해두면 하위 /admin/(console)/** 전부에 적용된다.
+export const dynamic = "force-dynamic";
+
 export default function AdminLayout({
   children,
 }: {
