@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { getNoticeDetail } from "@/lib/actions/notices";
 import { SourceLabel } from "@/components/atoms/SourceLabel";
 import { Badge } from "@/components/atoms/Badge";
+import { RICH_TEXT_CLASS } from "@/lib/richText";
 
 const buttonClass =
   "inline-flex items-center gap-2 rounded-xl border border-edge bg-surface px-4 py-2.5 text-base text-ink-muted shadow-md hover:bg-surface-hover";
@@ -62,7 +63,7 @@ export default async function NoticeDetailPage({
         <div className="mt-4 border-t border-edge pt-4">
           {notice.isHtml ? (
             <div
-              className="text-sm text-ink [&_img]:max-w-full [&_p]:my-2! **:leading-relaxed!"
+              className={`text-sm text-ink [&_img]:max-w-full [&_p]:my-2! **:leading-relaxed! ${RICH_TEXT_CLASS}`}
               dangerouslySetInnerHTML={{ __html: notice.content }}
             />
           ) : (

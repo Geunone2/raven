@@ -3,7 +3,7 @@ import { announcementCategoryLabels } from "@/lib/constants/announcements";
 import { FormField } from "@/components/molecules/FormField";
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
-import { Textarea } from "@/components/atoms/Textarea";
+import { RichTextEditor } from "@/components/organisms/RichTextEditor";
 import { Button } from "@/components/atoms/Button";
 
 export function AnnouncementForm({
@@ -40,13 +40,7 @@ export function AnnouncementForm({
       </div>
 
       <FormField label="내용" htmlFor="content">
-        <Textarea
-          id="content"
-          name="content"
-          defaultValue={announcement?.content}
-          rows={8}
-          required
-        />
+        <RichTextEditor name="content" defaultValue={announcement?.content} />
       </FormField>
 
       <label className="flex items-center gap-2 text-sm text-ink-muted">

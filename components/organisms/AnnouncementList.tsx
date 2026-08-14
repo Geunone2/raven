@@ -3,6 +3,7 @@ import { Announcement } from "@/lib/db/schema";
 import { announcementCategoryLabels } from "@/lib/constants/announcements";
 import { Badge } from "@/components/atoms/Badge";
 import { deleteAnnouncement } from "@/lib/actions/announcements";
+import { AnnouncementContentPreview } from "@/components/organisms/AnnouncementContentPreview";
 
 export function AnnouncementList({
   announcements,
@@ -36,9 +37,7 @@ export function AnnouncementList({
           <h2 className="mt-2 font-medium text-ink">
             {announcement.title}
           </h2>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-ink-muted">
-            {announcement.content}
-          </p>
+          <AnnouncementContentPreview content={announcement.content} />
           {!readOnly && (
             <div className="mt-3 flex items-center justify-end gap-3">
               <Link
