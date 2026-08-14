@@ -1,6 +1,6 @@
 "use server";
 
-import { and, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db/client";
 import {
@@ -8,6 +8,7 @@ import {
   guildMembers,
   guildTreasuryTransactions,
   loots,
+  NOW_UTC_TEXT,
 } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/auth/adminSession";
 import { isAuctionEnded } from "@/lib/constants/loot/loots";
@@ -126,53 +127,41 @@ export async function settleLootSale(lootId: number) {
   // 잘못 되돌아오지 않는다.
   const remainder = Math.round(netAfterTax) - reserveAmount - adminFeeAmount - distributedToMembers;
 
-  // better-sqlite3 드라이버의 트랜잭션은 완전히 동기 콜백만 지원한다(async 콜백을
-  // 넘기면 Promise를 반환한다고 보고 에러를 던진다) — 내부 쿼리들은 실제로는
-  // 동기 실행되므로 await 없이 그대로 호출한다.
-  db.transaction((tx) => {
+  // Postgres(postgres-js) 트랜잭션은 async 콜백을 지원한다 — 이전 SQLite/
+  // better-sqlite3는 동기 콜백만 됐어서 이 부분이 달랐다(2026-08-15 이관).
+  await db.transaction(async (tx) => {
     for (const payout of payouts) {
-      tx.insert(bankTransactions)
-        .values({
-          memberId: payout.memberId,
-          type: "loot_distribution",
-          amount: payout.amount,
-          memo: `내판 정산 - ${loot.itemName} (참여 ${payout.participationShare} + 전투력 ${payout.powerShare})`,
-          lootId: loot.id,
-        })
-        .run();
+      await tx.insert(bankTransactions).values({
+        memberId: payout.memberId,
+        type: "loot_distribution",
+        amount: payout.amount,
+        memo: `내판 정산 - ${loot.itemName} (참여 ${payout.participationShare} + 전투력 ${payout.powerShare})`,
+        lootId: loot.id,
+      });
     }
 
-    tx.insert(guildTreasuryTransactions)
-      .values({
-        type: "sale_reserve",
-        amount: reserveAmount,
-        reason: loot.itemName,
-        lootId: loot.id,
-      })
-      .run();
-    tx.insert(guildTreasuryTransactions)
-      .values({
-        type: "sale_reserve",
-        amount: adminFeeAmount,
-        reason: loot.itemName,
-        lootId: loot.id,
-      })
-      .run();
+    await tx.insert(guildTreasuryTransactions).values({
+      type: "sale_reserve",
+      amount: reserveAmount,
+      reason: loot.itemName,
+      lootId: loot.id,
+    });
+    await tx.insert(guildTreasuryTransactions).values({
+      type: "sale_reserve",
+      amount: adminFeeAmount,
+      reason: loot.itemName,
+      lootId: loot.id,
+    });
     if (remainder > 0) {
-      tx.insert(guildTreasuryTransactions)
-        .values({
-          type: "distribution_remainder",
-          amount: remainder,
-          reason: loot.itemName,
-          lootId: loot.id,
-        })
-        .run();
+      await tx.insert(guildTreasuryTransactions).values({
+        type: "distribution_remainder",
+        amount: remainder,
+        reason: loot.itemName,
+        lootId: loot.id,
+      });
     }
 
-    tx.update(loots)
-      .set({ settledAt: sql`(current_timestamp)` })
-      .where(eq(loots.id, loot.id))
-      .run();
+    await tx.update(loots).set({ settledAt: NOW_UTC_TEXT }).where(eq(loots.id, loot.id));
   });
 
   revalidatePath("/admin/bank");

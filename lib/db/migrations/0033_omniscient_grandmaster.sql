@@ -1,1 +1,0 @@
-ALTER TABLE `guild_members` ADD `boss_points_adjustment` integer DEFAULT 0 NOT NULL;

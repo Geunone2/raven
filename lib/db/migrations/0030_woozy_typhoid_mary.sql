@@ -1,1 +1,0 @@
-ALTER TABLE `participations` DROP COLUMN `points`;

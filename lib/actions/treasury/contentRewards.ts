@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, inArray, isNull, lte, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db/client";
 import {
@@ -10,6 +10,7 @@ import {
   GuildMember,
   guildMembers,
   guildTreasuryTransactions,
+  NOW_UTC_TEXT,
   scheduleCheckins,
   TreasurySettings,
 } from "@/lib/db/schema";
@@ -250,47 +251,40 @@ export async function confirmContentReward(
   const distributedToMembers = breakdown.reduce((sum, row) => sum + row.amount, 0);
   const remainder = Math.round(remainingPool) - distributedToMembers;
 
-  // better-sqlite3 드라이버의 트랜잭션은 완전히 동기 콜백만 지원한다.
-  db.transaction((tx) => {
+  // Postgres(postgres-js) 트랜잭션은 async 콜백을 지원한다 — 이전 SQLite/
+  // better-sqlite3는 동기 콜백만 됐어서 이 부분이 달랐다(2026-08-15 이관).
+  await db.transaction(async (tx) => {
     for (const row of breakdown) {
-      tx.insert(bankTransactions)
-        .values({
-          memberId: row.memberId,
-          type: "content_reward",
-          amount: row.amount,
-          memo: `${schedule.title} 보상 정산 (참여도 ${row.bossShare} + 전투력 ${row.powerShare})`,
-        })
-        .run();
+      await tx.insert(bankTransactions).values({
+        memberId: row.memberId,
+        type: "content_reward",
+        amount: row.amount,
+        memo: `${schedule.title} 보상 정산 (참여도 ${row.bossShare} + 전투력 ${row.powerShare})`,
+      });
     }
 
-    tx.insert(guildTreasuryTransactions)
-      .values({
-        type: "sale_reserve",
-        amount: reserveAmount,
-        reason: schedule.title,
-      })
-      .run();
-    tx.insert(guildTreasuryTransactions)
-      .values({
-        type: "sale_reserve",
-        amount: adminFeeAmount,
-        reason: schedule.title,
-      })
-      .run();
+    await tx.insert(guildTreasuryTransactions).values({
+      type: "sale_reserve",
+      amount: reserveAmount,
+      reason: schedule.title,
+    });
+    await tx.insert(guildTreasuryTransactions).values({
+      type: "sale_reserve",
+      amount: adminFeeAmount,
+      reason: schedule.title,
+    });
     if (remainder > 0) {
-      tx.insert(guildTreasuryTransactions)
-        .values({
-          type: "distribution_remainder",
-          amount: remainder,
-          reason: schedule.title,
-        })
-        .run();
+      await tx.insert(guildTreasuryTransactions).values({
+        type: "distribution_remainder",
+        amount: remainder,
+        reason: schedule.title,
+      });
     }
 
-    tx.update(contentSchedules)
-      .set({ rewardSettledAt: sql`(current_timestamp)` })
-      .where(eq(contentSchedules.id, scheduleId))
-      .run();
+    await tx
+      .update(contentSchedules)
+      .set({ rewardSettledAt: NOW_UTC_TEXT })
+      .where(eq(contentSchedules.id, scheduleId));
   });
 
   revalidatePath("/admin/bank");

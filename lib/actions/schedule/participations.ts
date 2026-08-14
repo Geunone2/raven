@@ -34,8 +34,9 @@ export async function saveParticipationsBulk(scheduleId: number, formData: FormD
   await requireAdmin();
   const members = await db.select({ id: guildMembers.id }).from(guildMembers);
 
-  // better-sqlite3 드라이버의 트랜잭션은 완전히 동기 콜백만 지원한다.
-  db.transaction((tx) => {
+  // Postgres(postgres-js) 트랜잭션은 async 콜백을 지원한다 — 이전 SQLite/
+  // better-sqlite3는 동기 콜백만 됐어서 이 부분이 달랐다(2026-08-15 이관).
+  await db.transaction(async (tx) => {
     for (const { id: memberId } of members) {
       const statusKey = `status_${memberId}`;
       const ticketKey = `ticketStatus_${memberId}`;
@@ -50,13 +51,13 @@ export async function saveParticipationsBulk(scheduleId: number, formData: FormD
         ? (ticketStatusRaw as (typeof ticketStatuses)[number])
         : null;
 
-      tx.insert(participations)
+      await tx
+        .insert(participations)
         .values({ scheduleId, memberId, status, ticketStatus })
         .onConflictDoUpdate({
           target: [participations.scheduleId, participations.memberId],
           set: { status, ticketStatus },
-        })
-        .run();
+        });
     }
   });
 
