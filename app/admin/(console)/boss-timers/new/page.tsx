@@ -1,5 +1,5 @@
-import { createBossTimer } from "@/lib/actions/bossTimers";
-import { BossTimerForm } from "@/components/organisms/BossTimerForm";
+import { createBossTimer } from "@/lib/actions/boss-timer/bossTimers";
+import { BossTimerForm } from "@/components/organisms/boss-timer/BossTimerForm";
 
 export default function NewBossTimerPage() {
   return (

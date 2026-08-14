@@ -1,7 +1,7 @@
-import { getSchedules } from "@/lib/actions/schedules";
-import { SCHEDULE_PERIODS, type SchedulePeriod } from "@/lib/constants/schedules";
-import { ScheduleFilterBar } from "@/components/organisms/ScheduleFilterBar";
-import { ScheduleTable } from "@/components/organisms/ScheduleTable";
+import { getSchedules } from "@/lib/actions/schedule/schedules";
+import { SCHEDULE_PERIODS, type SchedulePeriod } from "@/lib/constants/schedule/schedules";
+import { ScheduleFilterBar } from "@/components/organisms/schedule/ScheduleFilterBar";
+import { ScheduleTable } from "@/components/organisms/schedule/ScheduleTable";
 
 export default async function SchedulesPage({
   searchParams,

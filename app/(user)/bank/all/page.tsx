@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getGuildTreasuryBalance, getGuildTreasuryTransactions } from "@/lib/actions/treasury";
+import { getGuildTreasuryBalance, getGuildTreasuryTransactions } from "@/lib/actions/treasury/treasury";
 import { getSessionMemberId } from "@/lib/auth/session";
-import { GuildTreasuryTable } from "@/components/organisms/GuildTreasuryTable";
-import { NetTreasuryChart } from "@/components/organisms/NetTreasuryChart";
-import { TotalIcon } from "@/components/atoms/BankIcons";
+import { TreasuryTable } from "@/components/organisms/treasury/TreasuryTable";
+import { NetTreasuryChart } from "@/components/organisms/treasury/NetTreasuryChart";
+import { TotalIcon } from "@/components/organisms/treasury/BankIcons";
 
 export default async function BankAllPage() {
   const memberId = await getSessionMemberId();
@@ -33,7 +33,7 @@ export default async function BankAllPage() {
         </p>
       </div>
       <NetTreasuryChart transactions={transactions} />
-      <GuildTreasuryTable transactions={transactions} />
+      <TreasuryTable transactions={transactions} />
     </div>
   );
 }

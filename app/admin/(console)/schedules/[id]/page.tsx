@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { getSchedule, updateSchedule } from "@/lib/actions/schedules";
-import { ScheduleForm } from "@/components/organisms/ScheduleForm";
+import { getSchedule, updateSchedule } from "@/lib/actions/schedule/schedules";
+import { ScheduleForm } from "@/components/organisms/schedule/ScheduleForm";
 
 export default async function EditSchedulePage({
   params,

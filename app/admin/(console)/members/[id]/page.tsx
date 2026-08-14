@@ -4,11 +4,11 @@ import {
   getMemberParticipationHistory,
   getMemberStatHistory,
   updateMember,
-} from "@/lib/actions/members";
-import { MemberForm } from "@/components/organisms/MemberForm";
-import { MemberStatTrendChart } from "@/components/organisms/MemberStatTrendChart";
-import { MemberCombinedStatTrendChart } from "@/components/organisms/MemberCombinedStatTrendChart";
-import { MemberParticipationHistoryTable } from "@/components/organisms/MemberParticipationHistoryTable";
+} from "@/lib/actions/member/members";
+import { MemberForm } from "@/components/organisms/member/MemberForm";
+import { MemberStatTrendChart } from "@/components/organisms/member/MemberStatTrendChart";
+import { MemberCombinedStatTrendChart } from "@/components/organisms/member/MemberCombinedStatTrendChart";
+import { MemberParticipationHistoryTable } from "@/components/organisms/member/MemberParticipationHistoryTable";
 import { Button } from "@/components/atoms/Button";
 
 export default async function EditMemberPage({

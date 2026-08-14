@@ -1,5 +1,5 @@
-import { createSchedule } from "@/lib/actions/schedules";
-import { ScheduleForm } from "@/components/organisms/ScheduleForm";
+import { createSchedule } from "@/lib/actions/schedule/schedules";
+import { ScheduleForm } from "@/components/organisms/schedule/ScheduleForm";
 
 export default function NewSchedulePage() {
   return (

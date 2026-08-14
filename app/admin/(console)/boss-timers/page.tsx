@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getBossTimers } from "@/lib/actions/bossTimers";
-import { BossTimerTable } from "@/components/organisms/BossTimerTable";
+import { getBossTimers } from "@/lib/actions/boss-timer/bossTimers";
+import { BossTimerTable } from "@/components/organisms/boss-timer/BossTimerTable";
 import { Button } from "@/components/atoms/Button";
 
 export default async function BossTimersPage() {

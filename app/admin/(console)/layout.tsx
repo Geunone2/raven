@@ -1,4 +1,4 @@
-import { AdminSidebar } from "@/components/organisms/AdminSidebar";
+import { AdminSidebar } from "@/components/organisms/layout/AdminSidebar";
 
 export default function AdminLayout({
   children,

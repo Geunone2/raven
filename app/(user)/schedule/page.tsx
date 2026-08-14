@@ -1,5 +1,5 @@
-import { getSchedules } from "@/lib/actions/schedules";
-import { ScheduleViewToggle } from "@/components/organisms/ScheduleViewToggle";
+import { getSchedules } from "@/lib/actions/schedule/schedules";
+import { ScheduleViewToggle } from "@/components/organisms/schedule/ScheduleViewToggle";
 
 export default async function MemberSchedulePage() {
   const schedules = await getSchedules();

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getGuildTreasuryTransactions } from "@/lib/actions/treasury";
+import { getGuildTreasuryTransactions } from "@/lib/actions/treasury/treasury";
 import { getSessionMemberId } from "@/lib/auth/session";
-import { GuildTreasuryTable } from "@/components/organisms/GuildTreasuryTable";
-import { TreasuryTransactionChart } from "@/components/organisms/TreasuryTransactionChart";
-import { ExpenseIcon } from "@/components/atoms/BankIcons";
+import { TreasuryTable } from "@/components/organisms/treasury/TreasuryTable";
+import { TreasuryTransactionChart } from "@/components/organisms/treasury/TreasuryTransactionChart";
+import { ExpenseIcon } from "@/components/organisms/treasury/BankIcons";
 
 export default async function BankExpensePage() {
   const memberId = await getSessionMemberId();
@@ -32,7 +32,7 @@ export default async function BankExpensePage() {
         </p>
       </div>
       <TreasuryTransactionChart transactions={expense} color="danger" />
-      <GuildTreasuryTable transactions={expense} />
+      <TreasuryTable transactions={expense} />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { getMembers } from "@/lib/actions/members";
-import { getAnnouncements } from "@/lib/actions/announcements";
-import { getTodaySchedules } from "@/lib/actions/schedules";
-import { contentTypeLabels } from "@/lib/constants/schedules";
-import { countPendingLoots } from "@/lib/actions/loots";
+import { getMembers } from "@/lib/actions/member/members";
+import { getAnnouncements } from "@/lib/actions/announcement/announcements";
+import { getTodaySchedules } from "@/lib/actions/schedule/schedules";
+import { contentTypeLabels } from "@/lib/constants/schedule/schedules";
+import { countPendingLoots } from "@/lib/actions/loot/loots";
 
 export default async function DashboardPage() {
   const [members, announcements, todaySchedules, pendingLootCount] = await Promise.all([
