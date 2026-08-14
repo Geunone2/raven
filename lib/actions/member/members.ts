@@ -1,6 +1,6 @@
 "use server";
 
-import { asc, desc, eq, sql } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db/client";
@@ -11,6 +11,7 @@ import {
   contentTypes,
   guildMembers,
   memberStatHistory,
+  NOW_UTC_TEXT,
   participations,
   participationStatuses,
 } from "@/lib/db/schema";
@@ -218,7 +219,7 @@ export async function updateOwnStats(
       attack,
       defense,
       accuracy,
-      statsUpdatedAt: sql`(current_timestamp)`,
+      statsUpdatedAt: NOW_UTC_TEXT,
     })
     .where(eq(guildMembers.id, memberId));
   await db.insert(memberStatHistory).values({ memberId, level, attack, defense, accuracy });
