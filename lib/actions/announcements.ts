@@ -7,7 +7,9 @@ import { db } from "@/lib/db/client";
 import { announcementCategories, announcements } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/auth/adminSession";
 
-export async function getAnnouncements(filters: { category?: string } = {}) {
+export async function getAnnouncements(
+  filters: { category?: string; sort?: "asc" | "desc" } = {}
+) {
   const conditions = [];
   if (
     filters.category &&
@@ -18,12 +20,15 @@ export async function getAnnouncements(filters: { category?: string } = {}) {
     );
   }
 
+  const sort = filters.sort === "asc" ? asc : desc;
   const rows = await db
     .select()
     .from(announcements)
     .where(conditions.length ? and(...conditions) : undefined)
-    .orderBy(desc(announcements.createdAt));
+    .orderBy(sort(announcements.createdAt));
 
+  // 정렬 방향(오래된순/최신순)과 무관하게 고정 공지는 항상 맨 위 — Array.sort가
+  // 안정 정렬이라 같은 isPinned 그룹 안에서는 위에서 정한 createdAt 순서가 유지된다.
   return rows.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
 }
 

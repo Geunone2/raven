@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db/client";
 import {
-  contentSchedules,
   distributionMethods,
   guildMembers,
   lootBids,
@@ -30,9 +29,8 @@ export async function getLoots(filters: { status?: string } = {}) {
   }
 
   return db
-    .select({ loot: loots, schedule: contentSchedules })
+    .select({ loot: loots })
     .from(loots)
-    .leftJoin(contentSchedules, eq(loots.scheduleId, contentSchedules.id))
     .where(conditions.length ? and(...conditions) : undefined)
     .orderBy(desc(loots.obtainedAt));
 }
@@ -51,16 +49,13 @@ export async function getLoot(id: number) {
 }
 
 function parseLootForm(formData: FormData) {
-  const scheduleIdRaw = String(formData.get("scheduleId") ?? "");
   return {
-    scheduleId: scheduleIdRaw ? Number(scheduleIdRaw) : null,
     itemName: String(formData.get("itemName") ?? "").trim(),
     grade: String(formData.get("grade") ?? "rare") as (typeof lootGrades)[number],
     category: String(formData.get("category") ?? "other") as (typeof lootCategories)[number],
     obtainedAt: String(formData.get("obtainedAt") ?? ""),
-    obtainedBy: String(formData.get("obtainedBy") ?? "") || null,
     distributionMethod: String(
-      formData.get("distributionMethod") ?? "point"
+      formData.get("distributionMethod") ?? "officer_assigned"
     ) as (typeof distributionMethods)[number],
     askingPrice: formData.get("askingPrice")
       ? Number(formData.get("askingPrice"))
@@ -103,9 +98,8 @@ export async function deleteLoot(id: number) {
 
 export async function getOpenAuctionLoots() {
   return db
-    .select({ loot: loots, schedule: contentSchedules })
+    .select({ loot: loots })
     .from(loots)
-    .leftJoin(contentSchedules, eq(loots.scheduleId, contentSchedules.id))
     .where(and(eq(loots.distributionMethod, "auction"), ne(loots.status, "completed")))
     .orderBy(desc(loots.obtainedAt));
 }
@@ -114,9 +108,8 @@ export async function getOpenAuctionLoots() {
 // 무관하게 경매제 전리품 전체를 가져온다.
 export async function getAuctionLoots() {
   return db
-    .select({ loot: loots, schedule: contentSchedules })
+    .select({ loot: loots })
     .from(loots)
-    .leftJoin(contentSchedules, eq(loots.scheduleId, contentSchedules.id))
     .where(eq(loots.distributionMethod, "auction"))
     .orderBy(desc(loots.obtainedAt));
 }

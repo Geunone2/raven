@@ -16,6 +16,7 @@ import {
   OFFICIAL_FORUM_DEV_NEWS_MENU_SEQ,
 } from "@/lib/constants/officialForum";
 import { toEpochMs } from "@/lib/time";
+import { looksLikeHtml } from "@/lib/richText";
 import { NoticeSource } from "@/components/atoms/SourceLabel";
 
 export type NoticeCategory = "all" | NoticeSource;
@@ -137,9 +138,10 @@ export type NoticeDetail = {
   date: number;
   isPinned?: boolean;
   content: string;
-  // leader notices are stored as plain text (whitespace-pre-wrap); forum
-  // articles come back as raw, inline-styled HTML from Netmarble's CMS,
-  // meant to be rendered with dangerouslySetInnerHTML rather than escaped.
+  // 리더 공지는 2026-08-15부터 Tiptap 에디터로 작성된 HTML이지만, 그 이전에
+  // 일반 텍스트로 저장된 과거 공지도 섞여 있어 고정값이 아니라 매번 판별한다
+  // (looksLikeHtml). 포럼 게시글은 Netmarble CMS가 내려주는 raw inline-styled
+  // HTML이라 항상 true.
   isHtml: boolean;
   originalUrl?: string;
   imageUrl?: string;
@@ -170,7 +172,7 @@ export async function getNoticeDetail(key: string): Promise<NoticeDetail | null>
       date: toEpochMs(announcement.createdAt),
       isPinned: announcement.isPinned,
       content: announcement.content,
-      isHtml: false,
+      isHtml: looksLikeHtml(announcement.content),
       older: older && { key: `leader-${older.id}`, title: older.title },
       newer: newer && { key: `leader-${newer.id}`, title: newer.title },
     };

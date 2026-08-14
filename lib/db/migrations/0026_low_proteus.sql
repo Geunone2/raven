@@ -1,0 +1,1 @@
+ALTER TABLE `content_schedules` ADD `target_guild` text DEFAULT '전체' NOT NULL;

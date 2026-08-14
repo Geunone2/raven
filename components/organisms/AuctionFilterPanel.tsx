@@ -1,7 +1,7 @@
 "use client";
 
 import {useMemo, useState} from "react";
-import {ContentSchedule, GuildMember, Loot, LootBid} from "@/lib/db/schema";
+import {GuildMember, Loot, LootBid} from "@/lib/db/schema";
 import {isAuctionEnded} from "@/lib/constants/loots";
 import {GUILD_NAMES} from "@/lib/constants/members";
 import {Button} from "@/components/atoms/Button";
@@ -25,7 +25,7 @@ export function AuctionFilterPanel({
                                        bidsByLootId,
                                        myNickname,
                                    }: {
-    rows: { loot: Loot; schedule: ContentSchedule | null }[];
+    rows: { loot: Loot }[];
     myBids: Map<number, number>;
     bidsByLootId: Map<number, { bid: LootBid; member: GuildMember }[]>;
     myNickname: string | null;

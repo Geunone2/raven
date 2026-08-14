@@ -5,6 +5,7 @@ import {
   getGuildTreasuryTransactions,
   getTotalDistributedRewardPool,
 } from "@/lib/actions/treasury";
+import { getTreasurySettings } from "@/lib/actions/treasurySettings";
 import { getMemberPowerShare } from "@/lib/actions/members";
 import { getContentParticipationStats, getContributionStats } from "@/lib/actions/scheduleCheckins";
 import { getSessionMemberId } from "@/lib/auth/session";
@@ -26,7 +27,8 @@ export default async function BankPage() {
     powerShare,
     totalRewardPool,
     ancientFortressStats,
-    riftStats,
+    siegeStats,
+    settings,
   ] = await Promise.all([
     getBankBalance(memberId),
     getBankTransactions(memberId),
@@ -37,7 +39,8 @@ export default async function BankPage() {
     getMemberPowerShare(memberId),
     getTotalDistributedRewardPool(),
     getContentParticipationStats(memberId, "ancient_fortress"),
-    getContentParticipationStats(memberId, "rift"),
+    getContentParticipationStats(memberId, "siege"),
+    getTreasurySettings(),
   ]);
 
   const myBreakdown = memberBalances.find((row) => row.member.id === memberId);
@@ -57,7 +60,8 @@ export default async function BankPage() {
       totalPower={powerShare.totalPower}
       totalRewardPool={totalRewardPool}
       ancientFortressStats={ancientFortressStats}
-      riftStats={riftStats}
+      siegeStats={siegeStats}
+      settings={settings}
     />
   );
 }

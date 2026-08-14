@@ -62,6 +62,19 @@ export function formatMonthDayTimeUtc(input: Date | number | string): string {
   return `${month}-${day} ${hours}:${minutes}`;
 }
 
+// formatMonthDayTimeUtc에 초 단위를 더한 버전 — 관리자 길드원 목록의 "전투력
+// 입력일" 컬럼처럼 정확한 입력 순서/시각까지 구분하고 싶을 때만 쓴다. 나머지
+// 곳(전투력 저장 시각 안내 등)은 기존 분 단위 포맷을 그대로 쓴다.
+export function formatMonthDayTimeUtcWithSeconds(input: Date | number | string): string {
+  const date = new Date(toEpochMs(input));
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
 // For <input type="datetime-local"> values ("YYYY-MM-DDTHH:MM", no timezone
 // marker) — these are meant as local wall-clock time, so parse them directly
 // with `new Date()` rather than `toEpochMs`, which would force a UTC read

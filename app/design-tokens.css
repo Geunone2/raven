@@ -94,12 +94,13 @@
   --color-swatch-4: #0284c7;
   --color-swatch-5: #9a3412;
 
-  /* Content type colors: 길드 던전/어비스/필드 보스/균열/고대 성채/기타 이벤트 */
+  /* Content type colors: 길드 던전/어비스/필드 보스/고대 성채/쟁탈전/어비스 전투/기타 이벤트 */
   --color-content-guild-dungeon: #3730a3;
   --color-content-abyss: #9f1239;
   --color-content-field-boss: #ea580c;
-  --color-content-rift: #4d7c0f;
   --color-content-ancient-fortress: #57534e;
+  --color-content-siege: #4d7c0f;
+  --color-content-abyss-battle: #6d28d9;
   --color-content-other: #475569;
 }
 
@@ -176,8 +177,9 @@
     --color-content-guild-dungeon: #818cf8;
     --color-content-abyss: #fb7185;
     --color-content-field-boss: #fb923c;
-    --color-content-rift: #a3e635;
     --color-content-ancient-fortress: #a8a29e;
+    --color-content-siege: #a3e635;
+    --color-content-abyss-battle: #a78bfa;
     --color-content-other: #94a3b8;
   }
 }
@@ -230,7 +232,8 @@
   --color-content-guild-dungeon: #818cf8;
   --color-content-abyss: #fb7185;
   --color-content-field-boss: #fb923c;
-  --color-content-rift: #a3e635;
   --color-content-ancient-fortress: #a8a29e;
+  --color-content-siege: #a3e635;
+  --color-content-abyss-battle: #a78bfa;
   --color-content-other: #94a3b8;
 }

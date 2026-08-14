@@ -1,16 +1,16 @@
-import { actualStatuses, plannedStatuses, ticketStatuses } from "@/lib/db/schema";
+import { participationStatuses, ticketStatuses } from "@/lib/db/schema";
+import type { Tone } from "@/components/atoms/Badge";
 
-export const plannedStatusLabels: Record<(typeof plannedStatuses)[number], string> = {
+export const participationStatusLabels: Record<(typeof participationStatuses)[number], string> = {
   attend: "참석",
-  absent: "불참",
-  undecided: "미정",
+  mid_join: "중간합류",
+  absent: "미참석",
 };
 
-export const actualStatusLabels: Record<(typeof actualStatuses)[number], string> = {
-  present: "실제 참석",
-  late: "지각",
-  absent: "불참",
-  no_show: "무단 불참",
+export const participationStatusTone: Record<(typeof participationStatuses)[number], Tone> = {
+  attend: "success",
+  mid_join: "info",
+  absent: "danger",
 };
 
 export const ticketStatusLabels: Record<(typeof ticketStatuses)[number], string> = {

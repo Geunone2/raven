@@ -11,13 +11,7 @@ import {
 } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/auth/adminSession";
 import { isAuctionEnded } from "@/lib/constants/loots";
-import {
-  ADMIN_FEE_RATIO,
-  PARTICIPATION_REWARD_RATIO,
-  POWER_REWARD_RATIO,
-  RESERVE_RATIO,
-  SALE_TAX_RATE,
-} from "@/lib/constants/treasury";
+import { getTreasurySettings } from "@/lib/actions/treasurySettings";
 import { getMemberContributionPoints } from "@/lib/actions/scheduleCheckins";
 
 export async function getGuildTreasuryBalance(): Promise<number> {
@@ -53,16 +47,20 @@ export async function getUnsettledAuctionLoots() {
   return rows.filter((loot) => isAuctionEnded(loot) && loot.askingPrice != null);
 }
 
-export async function recordGuildExpense(formData: FormData) {
+// 길드 통장에 기타 수입/지출을 직접 기록한다(내판 정산·정산 분배처럼 자동으로
+// 쌓이는 거래가 아니라, 운영진이 손으로 입력하는 건). 같은 폼에서 type
+// 라디오(수입/지출)로 하나를 고르고, 여기서 부호만 뒤집어 저장한다.
+export async function recordGuildTransaction(formData: FormData) {
   await requireAdmin();
+  const isIncome = String(formData.get("type") ?? "expense") === "income";
   const amount = Math.abs(Number(formData.get("amount") ?? 0));
   const date = String(formData.get("date") ?? "").trim() || null;
   const reason = String(formData.get("reason") ?? "").trim() || null;
   const note = String(formData.get("note") ?? "").trim() || null;
 
   await db.insert(guildTreasuryTransactions).values({
-    type: "expense",
-    amount: -amount,
+    type: isIncome ? "income" : "expense",
+    amount: isIncome ? amount : -amount,
     date,
     reason,
     note,
@@ -78,7 +76,7 @@ export async function recordGuildExpense(formData: FormData) {
 // 32%로 나눈다. 참여보상은 이번 2주 구간의 전체 보스 참여도(콘텐츠 종류 상관없이
 // 2/3/4성 보스·어비스보스·전투 참여 점수 합산)를 기준으로, 전투력 보상은 전체
 // 길드원 전투력(공+방+명중) 비율로 나눈다. 고대성채/쟁탈전 자체 보상은 이 흐름과
-// 별개로 settleContentReward()에서 처리한다. 각 몫은 정수로 내림하고, 내림으로
+// 별개로 confirmContentReward()에서 처리한다. 각 몫은 정수로 내림하고, 내림으로
 // 남는 소수점 크리스탈은 모두 합쳐 길드 통장에 잔여금으로 적립해 다음 정산 때
 // 자연스럽게 반영되게 한다(크리스탈이 사라지지 않도록).
 export async function settleLootSale(lootId: number) {
@@ -87,11 +85,12 @@ export async function settleLootSale(lootId: number) {
   const [loot] = await db.select().from(loots).where(eq(loots.id, lootId));
   if (!loot || loot.settledAt || loot.askingPrice == null) return;
 
-  const netAfterTax = loot.askingPrice * (1 - SALE_TAX_RATE);
-  const reserveAmount = Math.floor(netAfterTax * RESERVE_RATIO);
-  const adminFeeAmount = Math.floor(netAfterTax * ADMIN_FEE_RATIO);
-  const participationPool = netAfterTax * PARTICIPATION_REWARD_RATIO;
-  const powerPool = netAfterTax * POWER_REWARD_RATIO;
+  const settings = await getTreasurySettings();
+  const netAfterTax = loot.askingPrice * (1 - settings.saleTaxRate / 100);
+  const reserveAmount = Math.floor(netAfterTax * (settings.reserveRatio / 100));
+  const adminFeeAmount = Math.floor(netAfterTax * (settings.adminFeeRatio / 100));
+  const participationPool = netAfterTax * (settings.participationRewardRatio / 100);
+  const powerPool = netAfterTax * (settings.powerRewardRatio / 100);
 
   const [members, pointsByMember] = await Promise.all([
     db.select().from(guildMembers),

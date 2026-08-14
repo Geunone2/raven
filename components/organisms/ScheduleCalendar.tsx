@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { DayPicker } from "react-day-picker";
-import { ContentSchedule, ScheduleCheckin } from "@/lib/db/schema";
-import { attendanceStatusLabels } from "@/lib/constants/attendance";
+import { ContentSchedule } from "@/lib/db/schema";
 
 function toDateKey(date: Date) {
   const year = date.getFullYear();
@@ -20,12 +18,8 @@ function parseDateKey(dateKey: string) {
 
 export function ScheduleCalendar({
   schedules,
-  myCheckinByScheduleId,
-  memberId,
 }: {
   schedules: ContentSchedule[];
-  myCheckinByScheduleId: Map<number, ScheduleCheckin>;
-  memberId: number | null;
 }) {
   const today = new Date();
   const [selected, setSelected] = useState<Date>(today);
@@ -74,21 +68,12 @@ export function ScheduleCalendar({
           </p>
         ) : (
           <ul className="mt-2 space-y-2">
-            {selectedSchedules.map((schedule) => {
-              const checkin = myCheckinByScheduleId.get(schedule.id);
-              return (
-                <li key={schedule.id} className="flex items-center justify-between text-sm">
-                  <span>
-                    {schedule.startTime}ㅣ{schedule.title}
-                  </span>
-                  {memberId && (
-                    <Link href="/attendance" className="text-ink-muted hover:underline">
-                      {checkin ? attendanceStatusLabels[checkin.status] : "미응답"}
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
+            {selectedSchedules.map((schedule) => (
+              <li key={schedule.id} className="flex items-center gap-1 text-sm">
+                <span className="shrink-0 text-ink-faint">{schedule.startTime}ㅣ</span>
+                <span className="min-w-0 flex-1 truncate">{schedule.title}</span>
+              </li>
+            ))}
           </ul>
         )}
       </div>

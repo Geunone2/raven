@@ -26,7 +26,6 @@ export const distributionMethodLabels: Record<
   (typeof distributionMethods)[number],
   string
 > = {
-  point: "포인트제",
   auction: "경매제",
   officer_assigned: "운영진 지정",
   random: "랜덤 추첨",

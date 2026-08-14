@@ -28,8 +28,11 @@ export const guildMembers = sqliteTable("guild_members", {
   defense: integer("defense").notNull().default(0),
   accuracy: integer("accuracy").notNull().default(0),
   role: text("role", { enum: guildMemberRoles }).notNull().default("member"),
-  lastLoginAt: text("last_login_at"),
   memo: text("memo"),
+  // participations 집계(자동 계산) 위에 운영진이 더하거나 뺄 수 있는 "참여도 점수"
+  // 보정값(2026-08-14, 2026-08-14 "참여도 점수"로 개명). 음수도 가능 — 자동 합계가
+  // 없어도 이 값만으로 점수를 줄 수 있다. SQL 컬럼명은 마이그레이션 없이 유지한다.
+  participationPointsAdjustment: integer("boss_points_adjustment").notNull().default(0),
   statsUpdatedAt: text("stats_updated_at"),
   createdAt: text("created_at")
     .notNull()
@@ -86,43 +89,41 @@ export const contentTypes = [
   "guild_dungeon",
   "abyss",
   "field_boss",
-  "rift",
   "ancient_fortress",
+  "siege",
+  "abyss_battle",
   "other",
 ] as const;
 
-export const scheduleStatuses = [
-  "scheduled",
-  "completed",
-  "failed",
-  "postponed",
-] as const;
+// 참여 대상(예전 targetAudiences: 전체/상위 전력/특정 파티)을 대체 — 어떤
+// 길드가 참여하는 일정인지로 바뀌었다(2026-08-13). "전체"는 길드 무관 공통 일정.
+export const SCHEDULE_TARGET_GUILDS = ["전체", "리더1", "리더2", "리더4"] as const;
 
-export const targetAudiences = ["all", "top_power", "specific_party"] as const;
-
-// 출석 점수 계산용 보스 등급. "none"은 보스 처치가 없는 일정(예: 균열, 기타 이벤트).
-export const bossTiers = ["none", "star2", "star3", "star4", "abyss_boss"] as const;
+// 출석 점수 계산용 보스 등급. "none"은 보스 처치가 없는 일정(예: 쟁탈전, 기타 이벤트).
+export const bossTiers = ["none", "star3", "star4", "star5", "abyss_boss"] as const;
 
 export const contentSchedules = sqliteTable("content_schedules", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   type: text("type", { enum: contentTypes }).notNull(),
   title: text("title").notNull(),
   date: text("date").notNull(),
-  gatherTime: text("gather_time"),
   startTime: text("start_time").notNull(),
-  expectedEndTime: text("expected_end_time"),
-  targetAudience: text("target_audience", { enum: targetAudiences })
+  targetGuild: text("target_guild", { enum: SCHEDULE_TARGET_GUILDS })
     .notNull()
-    .default("all"),
+    .default("전체"),
   serverName: text("server_name"),
-  location: text("location"),
-  requiredItem: text("required_item"),
   noticeText: text("notice_text"),
-  status: text("status", { enum: scheduleStatuses }).notNull().default("scheduled"),
   bossTier: text("boss_tier", { enum: bossTiers }).notNull().default("none"),
+  // 비어있으면(null) 보스 등급 기준 자동 계산값(bossTierPoints)을 쓰고, 값이
+  // 있으면 운영진이 일정 생성/수정 시 직접 입력한 점수로 자동 계산을 덮어쓴다
+  // (2026-08-14). 참여 체크의 중간합류는 이 점수의 절반을 받는다.
+  bossPoints: integer("boss_points"),
   hasCombat: integer("has_combat", { mode: "boolean" }).notNull().default(false),
   combatHours: real("combat_hours"),
-  // 고대성채/쟁탈전 전용 보상 정산(settleContentReward) 완료 여부 — 장비 내판
+  // "어비스 띵" — 어비스 관련 별도 보너스 점수(고정 6점, ABYSS_DING_POINTS).
+  // 보스 등급/전투 시간과 무관하게 운영진이 켜고 끄는 추가 부여 항목이다(2026-08-14).
+  hasAbyssDing: integer("has_abyss_ding", { mode: "boolean" }).notNull().default(false),
+  // 고대성채/쟁탈전 전용 보상 정산(confirmContentReward) 완료 여부 — 장비 내판
   // 정산(loots.settledAt)과는 별개 흐름이라 이 일정 자체에 기록한다.
   rewardSettledAt: text("reward_settled_at"),
   createdAt: text("created_at")
@@ -133,9 +134,10 @@ export const contentSchedules = sqliteTable("content_schedules", {
 export type ContentSchedule = typeof contentSchedules.$inferSelect;
 export type NewContentSchedule = typeof contentSchedules.$inferInsert;
 
-// 참여 신청(plannedStatus) 없이 row 자체가 없는 경우는 "미응답"으로 취급한다.
-export const plannedStatuses = ["attend", "absent", "undecided"] as const;
-export const actualStatuses = ["present", "late", "absent", "no_show"] as const;
+// 예전엔 참석 신청(plannedStatus)과 실제 참석(actualStatus)을 따로 기록했으나,
+// schedule_checkins(회원 셀프 출석체크)의 3단계 모델과 맞춰 하나로 합쳤다
+// (2026-08-14). row 자체가 없거나 status가 null이면 "미응답/미체크"로 취급한다.
+export const participationStatuses = ["attend", "mid_join", "absent"] as const;
 // 어비스 일정에서만 의미 있는 값이라 다른 콘텐츠 타입에서는 null로 둔다.
 export const ticketStatuses = ["owned", "insufficient", "needs_check"] as const;
 
@@ -149,12 +151,7 @@ export const participations = sqliteTable(
     memberId: integer("member_id")
       .notNull()
       .references(() => guildMembers.id, { onDelete: "cascade" }),
-    plannedStatus: text("planned_status", { enum: plannedStatuses })
-      .notNull()
-      .default("undecided"),
-    actualStatus: text("actual_status", { enum: actualStatuses }),
-    partyName: text("party_name"),
-    role: text("role"),
+    status: text("status", { enum: participationStatuses }),
     ticketStatus: text("ticket_status", { enum: ticketStatuses }),
     createdAt: text("created_at")
       .notNull()
@@ -202,12 +199,9 @@ export type GuildDungeonRun = typeof guildDungeonRuns.$inferSelect;
 export type NewGuildDungeonRun = typeof guildDungeonRuns.$inferInsert;
 
 export const lootGrades = ["rare", "hero", "legendary"] as const;
-export const distributionMethods = [
-  "point",
-  "auction",
-  "officer_assigned",
-  "random",
-] as const;
+// 포인트제는 2026-08-14에 제외했다(사용 이력 없음) — 운영진 지정/랜덤 추첨/경매제
+// 3가지만 남긴다.
+export const distributionMethods = ["auction", "officer_assigned", "random"] as const;
 export const lootCategories = [
   "weapon",
   "armor",
@@ -219,17 +213,13 @@ export const lootCategories = [
 
 export const loots = sqliteTable("loots", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  scheduleId: integer("schedule_id").references(() => contentSchedules.id, {
-    onDelete: "set null",
-  }),
   itemName: text("item_name").notNull(),
   grade: text("grade", { enum: lootGrades }).notNull().default("rare"),
   category: text("category", { enum: lootCategories }).notNull().default("other"),
   obtainedAt: text("obtained_at").notNull(),
-  obtainedBy: text("obtained_by"),
   distributionMethod: text("distribution_method", { enum: distributionMethods })
     .notNull()
-    .default("point"),
+    .default("officer_assigned"),
   askingPrice: integer("asking_price"),
   custodyGuild: text("custody_guild"),
   bidDeadline: text("bid_deadline"),
@@ -304,6 +294,7 @@ export const guildTreasuryTransactionTypes = [
   "sale_reserve",
   "distribution_remainder",
   "expense",
+  "income",
 ] as const;
 
 export const guildTreasuryTransactions = sqliteTable("guild_treasury_transactions", {
@@ -323,6 +314,24 @@ export const guildTreasuryTransactions = sqliteTable("guild_treasury_transaction
 
 export type GuildTreasuryTransaction = typeof guildTreasuryTransactions.$inferSelect;
 export type NewGuildTreasuryTransaction = typeof guildTreasuryTransactions.$inferInsert;
+
+// 정산 비율 설정 — 딱 한 행만 쓰는 싱글턴 테이블(2026-08-14). 값은 전부 %
+// (0~100) 단위로 저장하고, 계산할 때 /100 해서 쓴다. 장비 내판 정산
+// (settleLootSale)과 쟁탈전/고대성채 정산(confirmContentReward)이 이 값을
+// 공유한다 — 후자는 세금이 없어서 saleTaxRate만 안 쓴다.
+export const treasurySettings = sqliteTable("treasury_settings", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  saleTaxRate: real("sale_tax_rate").notNull().default(9),
+  reserveRatio: real("reserve_ratio").notNull().default(30),
+  adminFeeRatio: real("admin_fee_ratio").notNull().default(6),
+  participationRewardRatio: real("participation_reward_ratio").notNull().default(32),
+  powerRewardRatio: real("power_reward_ratio").notNull().default(32),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`(current_timestamp)`),
+});
+
+export type TreasurySettings = typeof treasurySettings.$inferSelect;
 
 export const bossTimerTypes = [
   "fixed",

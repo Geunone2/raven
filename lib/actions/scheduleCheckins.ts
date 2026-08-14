@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, gte, inArray } from "drizzle-orm";
+import { and, eq, gte, inArray, notInArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db/client";
 import {
@@ -16,6 +16,8 @@ import {
   getCheckinPoints,
   getScheduleBasePoints,
   isScheduleCheckinClosed,
+  isScheduleCheckinNotStarted,
+  NON_CONTRIBUTION_CONTENT_TYPES,
   type ScheduleCheckinResult,
 } from "@/lib/constants/schedules";
 import type { contentTypes } from "@/lib/db/schema";
@@ -71,7 +73,10 @@ export type ContributionStats = {
 };
 
 // 2주 단위로 초기화되는 출석 기여도 구간의 길드원별 참여 점수 합계. 내판 정산
-// (길드 통장 분배)의 참여 보상 비율 계산에도 재사용된다.
+// (길드 통장 분배)의 참여 보상 비율 계산에도 재사용된다. 쟁탈전/고대성채는
+// 기여도 점수를 부여하지 않는 콘텐츠라 애초에 집계에서 제외한다
+// (NON_CONTRIBUTION_CONTENT_TYPES) — 그 두 종류는 출석 체크가 순수하게
+// 참석 여부만 기록하는 명단이고, 보상은 별도의 다이아 정산으로 직접 받는다.
 export async function getMemberContributionPoints(): Promise<Map<number, number>> {
   const { start } = getCurrentBiweekRange();
 
@@ -79,7 +84,12 @@ export async function getMemberContributionPoints(): Promise<Map<number, number>
     .select({ checkin: scheduleCheckins, schedule: contentSchedules })
     .from(scheduleCheckins)
     .innerJoin(contentSchedules, eq(scheduleCheckins.scheduleId, contentSchedules.id))
-    .where(gte(contentSchedules.date, start));
+    .where(
+      and(
+        gte(contentSchedules.date, start),
+        notInArray(contentSchedules.type, NON_CONTRIBUTION_CONTENT_TYPES)
+      )
+    );
 
   const pointsByMember = new Map<number, number>();
   for (const { checkin, schedule } of rows) {
@@ -177,6 +187,9 @@ export async function setMyScheduleCheckin(
   if (!schedule) {
     return { ok: false, message: "존재하지 않는 일정입니다." };
   }
+  if (isScheduleCheckinNotStarted(schedule)) {
+    return { ok: false, message: "아직 시작 전인 일정입니다. 시작 시간 이후에 체크해주세요." };
+  }
   if (isScheduleCheckinClosed(schedule)) {
     return { ok: false, message: "출석 가능 시간(시작 후 6시간)이 지나 응답을 변경할 수 없습니다." };
   }
@@ -191,6 +204,19 @@ export async function setMyScheduleCheckin(
       ok: false,
       message: `${myServer} 서버 소속은 ${schedule.serverName} 서버 일정에 출석할 수 없습니다.`,
     };
+  }
+
+  // 클라이언트(ScheduleCheckinButtons)에서 이미 같은 상태로의 재요청을 막지만,
+  // 그 방어가 어떤 이유로든 뚫려도(예: 여러 탭, 오래된 화면) 여기서 한 번 더
+  // 막아서 불필요한 쓰기가 DB까지 가지 않게 한다.
+  const [existing] = await db
+    .select()
+    .from(scheduleCheckins)
+    .where(
+      and(eq(scheduleCheckins.scheduleId, scheduleId), eq(scheduleCheckins.memberId, memberId))
+    );
+  if (existing?.status === status) {
+    return { ok: true, message: `이미 ${attendanceStatusLabels[status]}(으)로 응답했습니다.` };
   }
 
   await db

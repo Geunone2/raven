@@ -8,6 +8,7 @@ import {
 import {ClassBadge} from "@/components/atoms/ClassBadge";
 import {MemberRankCards} from "@/components/organisms/MemberRankCards";
 import {MemberStatTrendChart} from "@/components/organisms/MemberStatTrendChart";
+import {MemberCombinedStatTrendChart} from "@/components/organisms/MemberCombinedStatTrendChart";
 
 export default async function MemberRankingDetailPage({
                                                           params,
@@ -67,12 +68,7 @@ export default async function MemberRankingDetailPage({
                 />
             </div>
 
-            <MemberStatTrendChart
-                title="종합 추이"
-                history={history}
-                dataKey="total"
-                color="var(--color-rank-total)"
-            />
+            <MemberCombinedStatTrendChart history={history}/>
         </div>
     );
 }

@@ -3,14 +3,7 @@
 import { useState } from "react";
 import { DayPicker } from "react-day-picker";
 import { ContentSchedule } from "@/lib/db/schema";
-import {
-  contentTypeLabels,
-  contentTypeTone,
-  getEffectiveScheduleStatus,
-  scheduleStatusLabels,
-  scheduleStatusTone,
-  targetAudienceLabels,
-} from "@/lib/constants/schedules";
+import { contentTypeLabels, contentTypeTone } from "@/lib/constants/schedules";
 import { Badge } from "@/components/atoms/Badge";
 import { CalendarDropdown } from "@/components/atoms/CalendarDropdown";
 import { hashTone } from "@/lib/colorHash";
@@ -90,9 +83,7 @@ export function ScheduleCalendarView({ schedules }: { schedules: ContentSchedule
           </p>
         ) : (
           <ul className="mt-4 max-h-[28rem] space-y-3 overflow-y-auto pr-1">
-            {selectedSchedules.map((schedule) => {
-              const effectiveStatus = getEffectiveScheduleStatus(schedule);
-              return (
+            {selectedSchedules.map((schedule) => (
               <li
                 key={schedule.id}
                 className="rounded-md border border-edge p-3 text-sm"
@@ -107,20 +98,13 @@ export function ScheduleCalendarView({ schedules }: { schedules: ContentSchedule
                     </Badge>
                     <span className="font-medium text-ink">{schedule.title}</span>
                   </div>
-                  <Badge tone={scheduleStatusTone[effectiveStatus]}>
-                    {scheduleStatusLabels[effectiveStatus]}
-                  </Badge>
+                  <Badge tone={hashTone(schedule.targetGuild)}>{schedule.targetGuild}</Badge>
                 </div>
                 <div className="mt-2 space-y-1 text-xs text-ink-faint">
-                  <p>
-                    집결 / 시작 {schedule.gatherTime ?? "-"} / {schedule.startTime}
-                  </p>
-                  <p>대상 {targetAudienceLabels[schedule.targetAudience]}</p>
-                  {schedule.location && <p>장소 {schedule.location}</p>}
+                  <p>시작 {schedule.startTime}</p>
                 </div>
               </li>
-              );
-            })}
+            ))}
           </ul>
         )}
       </div>

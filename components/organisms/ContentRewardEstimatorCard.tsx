@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { ADMIN_FEE_RATIO, RESERVE_RATIO } from "@/lib/constants/treasury";
 import { Input } from "@/components/atoms/Input";
 import { Label } from "@/components/atoms/Label";
 import { Button } from "@/components/atoms/Button";
@@ -33,21 +32,27 @@ function Row({
   );
 }
 
-const BOSS_SHARE_OF_POOL = 0.5;
-const POWER_SHARE_OF_POOL = 0.5;
-
 export function ContentRewardEstimatorCard({
   title,
   myPower,
   totalPower,
   myScore,
   totalScore,
+  reserveRatio,
+  adminFeeRatio,
+  participationRewardRatio,
+  powerRewardRatio,
 }: {
   title: string;
   myPower: number;
   totalPower: number;
   myScore: number;
   totalScore: number;
+  // 전부 %(0~100) 단위 — /admin/settings에서 조정한 값을 그대로 받는다.
+  reserveRatio: number;
+  adminFeeRatio: number;
+  participationRewardRatio: number;
+  powerRewardRatio: number;
 }) {
   const [totalDiaInput, setTotalDiaInput] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
@@ -57,20 +62,18 @@ export function ContentRewardEstimatorCard({
   const canCalculate = totalDia > 0;
   const revealed = status === "done";
 
-  // 고대성채/쟁탈전은 장비 내판과 달리 세금이 없다. 총 다이아에서 혈비 30% /
-  // 총무비 6%만 뗀 나머지(64%)를 전투력 50% + 참여도 50%로 나눈다 —
-  // settleContentReward(관리자의 실제 정산 실행)와 동일한 방식. 50%/50%는 그
-  // 자체가 지급액이 아니라 "전체 전투력에서 내 전투력 비율"과 "전체 참여도
-  // 점수에서 내 참여도 점수 비율"이 최종 몫에서 차지하는 가중치다.
-  const reserveAmount = Math.floor(totalDia * RESERVE_RATIO);
-  const adminFeeAmount = Math.floor(totalDia * ADMIN_FEE_RATIO);
-  const remainingPool = totalDia - reserveAmount - adminFeeAmount;
-  const bossPool = remainingPool * BOSS_SHARE_OF_POOL;
-  const powerPool = remainingPool * POWER_SHARE_OF_POOL;
+  // 고대성채/쟁탈전은 장비 내판과 달리 세금이 없다. 참여도 풀/전투력 풀은
+  // "총 다이아 × 참여보상 비율"·"총 다이아 × 전투력보상 비율"로 계산해서
+  // confirmContentReward(관리자의 실제 정산 실행)와 동일한 방식을 쓴다. 혈비/
+  // 총무비는 별도로 빠져나가는 몫이라 화면에 정보용으로만 같이 보여준다.
+  const reserveAmount = Math.floor(totalDia * (reserveRatio / 100));
+  const adminFeeAmount = Math.floor(totalDia * (adminFeeRatio / 100));
+  const bossPool = totalDia * (participationRewardRatio / 100);
+  const powerPool = totalDia * (powerRewardRatio / 100);
 
   // 전투력 비율과 참여도 비율 모두 전체 길드원이 아니라, 이번 2주 구간 동안
   // 실제로 이 콘텐츠(고대성채/쟁탈전)에 출석/중간합류한 사람들끼리의 비율이다 —
-  // settleContentReward가 실제 정산에서 쓰는 것과 동일한 기준. 이번 구간에
+  // confirmContentReward가 실제 정산에서 쓰는 것과 동일한 기준. 이번 구간에
   // 참여한 적이 없으면 두 비율 모두 0이라 몫도 자동으로 0이 된다.
   const powerRatio = totalPower > 0 ? myPower / totalPower : 0;
   const scoreRatio = totalScore > 0 ? myScore / totalScore : 0;
@@ -93,11 +96,12 @@ export function ContentRewardEstimatorCard({
   }
 
   return (
-    <div className="w-full rounded-xl border border-edge bg-surface p-4 shadow-md min-h-120">
+    <div className="w-full rounded-xl border border-edge bg-surface p-4 shadow-md min-h-120 max-h-120">
       <p className="text-base font-bold text-brand">{title} - 참여 시 예상 정산 몫은?</p>
       <p className="mt-1 font-mono text-xs text-ink-faint">
-        남은 금액 = 다이아 − 혈비(30%) − 총무비(6%)
-        <br />내 몫 = 남은 금액 × (전투력 비율 × 50% + 참여도 비율 × 50%)
+        참여도 풀 = 다이아 × 참여보상 {participationRewardRatio}% · 전투력 풀 = 다이아 × 전투력보상{" "}
+        {powerRewardRatio}%
+        <br />내 몫 = 참여도 풀 × 내 참여도 비율 + 전투력 풀 × 내 전투력 비율
       </p>
 
       <div className="mt-4">
@@ -113,28 +117,28 @@ export function ContentRewardEstimatorCard({
 
       <div className="mt-4 space-y-1.5">
         <Row
-          label="혈비 30%"
+          label={`혈비 ${reserveRatio}%`}
           value={`${reserveAmount.toLocaleString()} 크리스탈`}
           mask="? 크리스탈"
           revealed={revealed}
           spinKey={resultKey}
         />
         <Row
-          label="총무비 6%"
+          label={`총무비 ${adminFeeRatio}%`}
           value={`${adminFeeAmount.toLocaleString()} 크리스탈`}
           mask="? 크리스탈"
           revealed={revealed}
           spinKey={resultKey}
         />
         <Row
-          label="참여도 풀 (50%)"
+          label={`참여도 풀 (${participationRewardRatio}%)`}
           value={`${Math.floor(bossPool).toLocaleString()} 크리스탈`}
           mask="? 크리스탈"
           revealed={revealed}
           spinKey={resultKey}
         />
         <Row
-          label="전투력 풀 (50%)"
+          label={`전투력 풀 (${powerRewardRatio}%)`}
           value={`${Math.floor(powerPool).toLocaleString()} 크리스탈`}
           mask="? 크리스탈"
           revealed={revealed}

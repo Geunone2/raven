@@ -9,6 +9,7 @@ const navItems = [
   { href: "/admin/boss-timers", label: "보스 타이머" },
   { href: "/admin/bank", label: "통장 관리" },
   { href: "/admin/announcements", label: "공지사항" },
+  { href: "/admin/settings", label: "정산 설정" },
 ];
 
 export function AdminSidebar() {

@@ -1,5 +1,4 @@
 import {
-  ContentSchedule,
   distributionMethods,
   Loot,
   lootCategories,
@@ -14,31 +13,22 @@ import {
 import { distributionStatusLabels } from "@/lib/constants/dungeonRuns";
 import { FormField } from "@/components/molecules/FormField";
 import { Input } from "@/components/atoms/Input";
-import { Select } from "@/components/atoms/Select";
+import { CustomSelect } from "@/components/atoms/CustomSelect";
 import { Textarea } from "@/components/atoms/Textarea";
 import { Button } from "@/components/atoms/Button";
 
 export function LootForm({
   loot,
-  schedules,
   action,
 }: {
   loot?: Loot;
-  schedules: ContentSchedule[];
   action: (formData: FormData) => void;
 }) {
   return (
     <form action={action} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="연결된 일정 (선택)" htmlFor="scheduleId">
-          <Select id="scheduleId" name="scheduleId" defaultValue={loot?.scheduleId ?? ""}>
-            <option value="">연결 안 함</option>
-            {schedules.map((schedule) => (
-              <option key={schedule.id} value={schedule.id}>
-                {schedule.date} · {schedule.title}
-              </option>
-            ))}
-          </Select>
+        <FormField label="아이템명" htmlFor="itemName">
+          <Input id="itemName" name="itemName" defaultValue={loot?.itemName} required />
         </FormField>
         <FormField label="획득일" htmlFor="obtainedAt">
           <Input
@@ -51,33 +41,27 @@ export function LootForm({
         </FormField>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <FormField label="아이템명" htmlFor="itemName">
-          <Input id="itemName" name="itemName" defaultValue={loot?.itemName} required />
-        </FormField>
+      <div className="grid grid-cols-2 gap-4">
         <FormField label="등급" htmlFor="grade">
-          <Select id="grade" name="grade" defaultValue={loot?.grade ?? "rare"}>
-            {lootGrades.map((grade) => (
-              <option key={grade} value={grade}>
-                {lootGradeLabels[grade]}
-              </option>
-            ))}
-          </Select>
+          <CustomSelect
+            id="grade"
+            name="grade"
+            defaultValue={loot?.grade ?? "rare"}
+            options={lootGrades.map((grade) => ({ value: grade, label: lootGradeLabels[grade] }))}
+          />
         </FormField>
         <FormField label="아이템 정보" htmlFor="category">
-          <Select id="category" name="category" defaultValue={loot?.category ?? "other"}>
-            {lootCategories.map((category) => (
-              <option key={category} value={category}>
-                {lootCategoryLabels[category]}
-              </option>
-            ))}
-          </Select>
+          <CustomSelect
+            id="category"
+            name="category"
+            defaultValue={loot?.category ?? "other"}
+            options={lootCategories.map((category) => ({
+              value: category,
+              label: lootCategoryLabels[category],
+            }))}
+          />
         </FormField>
       </div>
-
-      <FormField label="획득자" htmlFor="obtainedBy">
-        <Input id="obtainedBy" name="obtainedBy" defaultValue={loot?.obtainedBy ?? ""} />
-      </FormField>
 
       <div className="grid grid-cols-3 gap-4">
         <FormField label="판매 금액" htmlFor="askingPrice">
@@ -109,29 +93,29 @@ export function LootForm({
 
       <div className="grid grid-cols-3 gap-4">
         <FormField label="분배 방식" htmlFor="distributionMethod">
-          <Select
+          <CustomSelect
             id="distributionMethod"
             name="distributionMethod"
-            defaultValue={loot?.distributionMethod ?? "point"}
-          >
-            {distributionMethods.map((method) => (
-              <option key={method} value={method}>
-                {distributionMethodLabels[method]}
-              </option>
-            ))}
-          </Select>
+            defaultValue={loot?.distributionMethod ?? "officer_assigned"}
+            options={distributionMethods.map((method) => ({
+              value: method,
+              label: distributionMethodLabels[method],
+            }))}
+          />
         </FormField>
         <FormField label="최종 수령자 (낙찰자)" htmlFor="receiver">
           <Input id="receiver" name="receiver" defaultValue={loot?.receiver ?? ""} />
         </FormField>
         <FormField label="분배 상태" htmlFor="status">
-          <Select id="status" name="status" defaultValue={loot?.status ?? "undistributed"}>
-            {lootDistributionStatuses.map((status) => (
-              <option key={status} value={status}>
-                {distributionStatusLabels[status]}
-              </option>
-            ))}
-          </Select>
+          <CustomSelect
+            id="status"
+            name="status"
+            defaultValue={loot?.status ?? "undistributed"}
+            options={lootDistributionStatuses.map((status) => ({
+              value: status,
+              label: distributionStatusLabels[status],
+            }))}
+          />
         </FormField>
       </div>
 

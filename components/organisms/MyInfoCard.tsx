@@ -14,7 +14,7 @@ export function MyInfoCard({
   // 어긋나 레이아웃이 깨진다(min-h-70은 유지하고 안쪽 내용만 로그인 유도로 교체).
   if (!member) {
     return (
-      <div className="flex w-full min-h-70 flex-col rounded-xl border border-edge bg-surface p-4 shadow-md">
+      <div className="flex w-full min-h-70 max-h-70 flex-col overflow-hidden rounded-xl border border-edge bg-surface p-4 shadow-md">
         <p className="text-base font-bold text-brand">내 정보</p>
         <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-sm">
           <p className="text-ink-muted">
@@ -37,7 +37,7 @@ export function MyInfoCard({
   const total = member.attack + member.defense + member.accuracy;
 
   return (
-    <div className="w-full rounded-xl border border-edge bg-surface p-4 shadow-md min-h-70">
+    <div className="w-full min-h-70 max-h-70 overflow-hidden rounded-xl border border-edge bg-surface p-4 shadow-md">
       <p className="text-base font-bold text-brand">내 정보</p>
       <div className="mt-3 space-y-2 text-sm">
         <div className="flex items-center justify-between">

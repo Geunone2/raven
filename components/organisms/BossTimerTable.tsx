@@ -39,25 +39,32 @@ export function BossTimerTable({
 
   return (
     <div className="overflow-x-auto rounded-md border border-edge">
-      <table className="w-full min-w-[700px] text-left text-sm">
+      {/* 종류/메모는 태블릿 미만에서 숨긴다(2026-08-14) — 보스명과 다음 출현
+          시각(타이머의 핵심 정보)만 있으면 화면이 깨지지 않는다. */}
+      <table className="w-full min-w-[420px] text-left text-sm md:min-w-[560px] xl:min-w-[700px]">
         <thead className="bg-surface-raised text-ink-faint">
           <tr>
             <th className="px-4 py-3 font-medium">보스명</th>
-            <th className="px-4 py-3 font-medium">종류</th>
+            <th className="hidden px-4 py-3 font-medium md:table-cell">종류</th>
             <th className="px-4 py-3 font-medium">다음 출현</th>
-            <th className="px-4 py-3 font-medium">메모</th>
+            <th className="hidden px-4 py-3 font-medium xl:table-cell">메모</th>
             {!readOnly && <th className="px-4 py-3 font-medium" />}
           </tr>
         </thead>
         <tbody className="divide-y divide-edge">
           {sorted.map((boss) => (
             <tr key={boss.id}>
-              <td className="px-4 py-3 font-medium text-ink">{boss.name}</td>
-              <td className="px-4 py-3">
+              <td className="px-4 py-3 font-medium text-ink">
+                {boss.name}
+                <span className="ml-1.5 md:hidden">
+                  <Badge>{bossTimerTypeLabels[boss.type]}</Badge>
+                </span>
+              </td>
+              <td className="hidden px-4 py-3 md:table-cell">
                 <Badge>{bossTimerTypeLabels[boss.type]}</Badge>
               </td>
               <td className="px-4 py-3 text-ink-faint">{formatSpawn(getNextSpawnAt(boss))}</td>
-              <td className="px-4 py-3 text-ink-faint">{boss.memo ?? "-"}</td>
+              <td className="hidden px-4 py-3 text-ink-faint xl:table-cell">{boss.memo ?? "-"}</td>
               {!readOnly && (
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-3">

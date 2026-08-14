@@ -7,6 +7,8 @@ import {
     getCheckinPoints,
     getScheduleBasePoints,
     isScheduleCheckinClosed,
+    isScheduleCheckinNotStarted,
+    NON_CONTRIBUTION_CONTENT_TYPES,
 } from "@/lib/constants/schedules";
 import {hashTone} from "@/lib/colorHash";
 import {Badge} from "@/components/atoms/Badge";
@@ -37,13 +39,19 @@ export function ScheduleCheckinList({
         <ul className="space-y-3">
             {schedules.map((schedule) => {
                 const myStatus = myCheckinByScheduleId.get(schedule.id)?.status ?? null;
+                const notStarted = isScheduleCheckinNotStarted(schedule);
                 const isClosed = isScheduleCheckinClosed(schedule);
                 const isServerMismatch = Boolean(
                     schedule.serverName && myServer && schedule.serverName !== myServer
                 );
                 const isDisabled = isClosed || isServerMismatch;
-                const {bossPoints, combatPoints, total} = getScheduleBasePoints(schedule);
+                const {bossPoints, combatPoints, abyssDingPoints, total} = getScheduleBasePoints(schedule);
                 const earnedPoints = getCheckinPoints(total, myStatus);
+                // 쟁탈전/고대성채는 기여도 점수를 안 받는 콘텐츠 — 참석 여부만
+                // 기록하는 명단이라 점수 표시 자체를 안 보여준다.
+                const isPointless = (NON_CONTRIBUTION_CONTENT_TYPES as readonly string[]).includes(
+                    schedule.type
+                );
 
                 return (
                     <li
@@ -59,23 +67,27 @@ export function ScheduleCheckinList({
                                     <Badge tone={hashTone(schedule.serverName)}>{schedule.serverName}</Badge>
                                 )}
                             </div>
-                            <span className="font-bold text-brand">
+                            {isPointless ? (
+                                <span className="text-ink-faint">명단 등록</span>
+                            ) : (
+                                <span className="font-bold text-brand">
                   {myStatus === "checked_in"
                       ? `획득 예정 ${earnedPoints}점`
                       : myStatus === "mid_join"
                           ? `중간합류 획득 ${earnedPoints}점 (절반)`
                           : `출석 시 ${total}점`}
                 </span>
+                            )}
                         </div>
 
                         <div className="mt-2 flex items-start justify-between gap-2">
                             <p className="font-medium text-ink">{schedule.title}</p>
                             <span className="shrink-0 text-sm text-ink-faint">
-                {schedule.date} {schedule.gatherTime ?? "-"} / {schedule.startTime}
+                {schedule.date} {schedule.startTime}
               </span>
                         </div>
 
-                        {total > 0 && (
+                        {!isPointless && total > 0 && (
                             <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
                                 {bossPoints > 0 && (
                                     <Badge tone="warning" size="sm">
@@ -90,14 +102,25 @@ export function ScheduleCheckinList({
                                         전투 {schedule.combatHours ?? 0}시간 {combatPoints}점
                                     </Badge>
                                 )}
+                                {schedule.hasAbyssDing && (
+                                    <Badge tone="danger" size="sm">
+                                        어비스 띵 {abyssDingPoints}점
+                                    </Badge>
+                                )}
                             </div>
                         )}
 
-                        <ScheduleCheckinButtons
-                            scheduleId={schedule.id}
-                            myStatus={myStatus}
-                            disabled={isDisabled}
-                        />
+                        {notStarted ? (
+                            <p className="mt-3 text-xs text-ink-faint">
+                                시작 시간 이후에 출석 체크 버튼이 나타납니다.
+                            </p>
+                        ) : (
+                            <ScheduleCheckinButtons
+                                scheduleId={schedule.id}
+                                myStatus={myStatus}
+                                disabled={isDisabled}
+                            />
+                        )}
 
                         <ScheduleCheckinRoster roster={rosterByScheduleId.get(schedule.id) ?? []}/>
 
@@ -107,7 +130,7 @@ export function ScheduleCheckinList({
                                 없습니다.
                             </p>
                         )}
-                        {!isServerMismatch && isClosed && (
+                        {!isServerMismatch && !notStarted && isClosed && (
                             <p className="mt-2 text-xs text-ink-faint">
                                 출석 가능 시간(시작 후 6시간)이 지나 응답을 변경할 수 없습니다.
                             </p>

@@ -31,7 +31,7 @@ function SummaryCard({
     value: number;
     tone: keyof typeof SUMMARY_TONE_CLASSES;
     lastUpdatedAt: string | null;
-    href: string;
+    href?: string;
 }) {
     const Icon = SUMMARY_ICONS[tone];
     return (
@@ -41,9 +41,11 @@ function SummaryCard({
                     <Icon className="size-4"/>
                     {label}
                 </p>
-                <Link href={href} className="text-xs text-ink-muted hover:underline">
-                    전체보기 &gt;
-                </Link>
+                {href && (
+                    <Link href={href} className="text-xs text-ink-muted hover:underline">
+                        전체보기 &gt;
+                    </Link>
+                )}
             </div>
             <p className={`mt-1 text-2xl font-semibold ${SUMMARY_TONE_CLASSES[tone]}`}>
                 <RouletteText text={value.toLocaleString()}/>
@@ -113,9 +115,18 @@ function RecentTransactionCard({
 export function GuildTreasurySummaryCard({
                                              balance,
                                              transactions,
+                                             showLinks = true,
+                                             showRecent = true,
                                          }: {
     balance: number;
     transactions: GuildTreasuryTransaction[];
+    // 어드민 통장 관리 탭에서 재사용할 때는 /bank/all 등 유저 화면 경로로 보낼
+    // 이유가 없다(같은 페이지의 "길드 통장 거래 내역" 탭이 그 역할을 대신한다) —
+    // 이때만 false로 넘겨 "전체보기" 링크를 숨긴다.
+    showLinks?: boolean;
+    // 어드민 통장 관리 페이지 최상단은 3개 요약 카드만 고정 노출하고 "최근 수입/
+    // 최근 지출" 카드는 필요 없다(2026-08-14) — 이때만 false로 넘겨 숨긴다.
+    showRecent?: boolean;
 }) {
     const income = transactions.filter((tx) => tx.amount > 0);
     const expense = transactions.filter((tx) => tx.amount < 0);
@@ -135,38 +146,40 @@ export function GuildTreasurySummaryCard({
                     value={balance}
                     tone="brand"
                     lastUpdatedAt={balanceUpdatedAt}
-                    href="/bank/all"
+                    href={showLinks ? "/bank/all" : undefined}
                 />
                 <SummaryCard
                     label="총 수입"
                     value={incomeTotal}
                     tone="success"
                     lastUpdatedAt={incomeUpdatedAt}
-                    href="/bank/income"
+                    href={showLinks ? "/bank/income" : undefined}
                 />
                 <SummaryCard
                     label="총 지출"
                     value={expenseTotal}
                     tone="danger"
                     lastUpdatedAt={expenseUpdatedAt}
-                    href="/bank/expense"
+                    href={showLinks ? "/bank/expense" : undefined}
                 />
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <RecentTransactionCard
-                    title="최근 수입"
-                    titleTone="success"
-                    transactions={income.slice(0, RECENT_INCOME_COUNT)}
-                    amountLabel="수입"
-                />
-                <RecentTransactionCard
-                    title="최근 지출"
-                    titleTone="danger"
-                    transactions={expense.slice(0, RECENT_EXPENSE_COUNT)}
-                    amountLabel="지출"
-                />
-            </div>
+            {showRecent && (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <RecentTransactionCard
+                        title="최근 수입"
+                        titleTone="success"
+                        transactions={income.slice(0, RECENT_INCOME_COUNT)}
+                        amountLabel="수입"
+                    />
+                    <RecentTransactionCard
+                        title="최근 지출"
+                        titleTone="danger"
+                        transactions={expense.slice(0, RECENT_EXPENSE_COUNT)}
+                        amountLabel="지출"
+                    />
+                </div>
+            )}
         </div>
     );
 }

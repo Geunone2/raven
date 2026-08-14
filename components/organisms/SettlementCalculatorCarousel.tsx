@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { ContentParticipationStats } from "@/lib/actions/scheduleCheckins";
+import type { TreasurySettings } from "@/lib/db/schema";
 import { SettlementEstimatorCard } from "@/components/organisms/SettlementEstimatorCard";
 import { ContentRewardEstimatorCard } from "@/components/organisms/ContentRewardEstimatorCard";
 
@@ -14,7 +15,8 @@ export function SettlementCalculatorCarousel({
   totalPower,
   totalRewardPool,
   ancientFortressStats,
-  riftStats,
+  siegeStats,
+  settings,
 }: {
   myPoints: number;
   totalPoints: number;
@@ -22,7 +24,8 @@ export function SettlementCalculatorCarousel({
   totalPower: number;
   totalRewardPool: number;
   ancientFortressStats: ContentParticipationStats;
-  riftStats: ContentParticipationStats;
+  siegeStats: ContentParticipationStats;
+  settings: TreasurySettings;
 }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -45,6 +48,8 @@ export function SettlementCalculatorCarousel({
       myPower={myPower}
       totalPower={totalPower}
       totalRewardPool={totalRewardPool}
+      participationRewardRatio={settings.participationRewardRatio}
+      powerRewardRatio={settings.powerRewardRatio}
     />,
     <ContentRewardEstimatorCard
       key="ancient_fortress"
@@ -53,14 +58,22 @@ export function SettlementCalculatorCarousel({
       totalPower={ancientFortressStats.totalPower}
       myScore={ancientFortressStats.myScore}
       totalScore={ancientFortressStats.totalScore}
+      reserveRatio={settings.reserveRatio}
+      adminFeeRatio={settings.adminFeeRatio}
+      participationRewardRatio={settings.participationRewardRatio}
+      powerRewardRatio={settings.powerRewardRatio}
     />,
     <ContentRewardEstimatorCard
-      key="rift"
+      key="siege"
       title="쟁탈전"
-      myPower={riftStats.myPower}
-      totalPower={riftStats.totalPower}
-      myScore={riftStats.myScore}
-      totalScore={riftStats.totalScore}
+      myPower={siegeStats.myPower}
+      totalPower={siegeStats.totalPower}
+      myScore={siegeStats.myScore}
+      totalScore={siegeStats.totalScore}
+      reserveRatio={settings.reserveRatio}
+      adminFeeRatio={settings.adminFeeRatio}
+      participationRewardRatio={settings.participationRewardRatio}
+      powerRewardRatio={settings.powerRewardRatio}
     />,
   ];
 
