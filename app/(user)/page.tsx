@@ -7,7 +7,7 @@ import {getOfficialForumNotices} from "@/lib/actions/announcement/officialForum"
 import {getMember, getMemberRankings} from "@/lib/actions/member/members";
 import {getBankBalance} from "@/lib/actions/treasury/bank";
 import {getBidsForLoot, getMyBidAmounts, getOpenAuctionLoots} from "@/lib/actions/loot/loots";
-import {isAuctionEnded} from "@/lib/constants/loot/loots";
+import {bidDeadlineMs, isAuctionEnded} from "@/lib/constants/loot/loots";
 import {
     OFFICIAL_FORUM_NOTICE_MENU_SEQ,
     OFFICIAL_FORUM_UPDATE_MENU_SEQ,
@@ -15,7 +15,7 @@ import {
 } from "@/lib/constants/announcement/officialForum";
 import {getSessionMemberId} from "@/lib/auth/session";
 import {GuildMember, ScheduleCheckin} from "@/lib/db/schema";
-import {formatMonthDay, isWithinLast24Hours} from "@/lib/time";
+import {formatMonthDay, isWithinLast24Hours, nowKst} from "@/lib/time";
 import {ScheduleCalendar} from "@/components/organisms/schedule/ScheduleCalendar";
 import {BossTimerCard} from "@/components/organisms/boss-timer/BossTimerCard";
 import {RankingCard} from "@/components/organisms/ranking/RankingCard";
@@ -28,7 +28,10 @@ import {NewBadge} from "@/components/atoms/NewBadge";
 
 export default async function GuildHomePage() {
     const memberId = await getSessionMemberId();
-    const now = new Date();
+    // 서버가 UTC로 돌아도(Vercel) "이번 달"은 항상 KST 기준으로 계산한다 —
+    // new Date()의 로컬 getter를 그대로 썼으면 자정~오전 9시(KST) 사이엔
+    // 서버가 전월로 잘못 계산했다(2026-08-15 수정).
+    const now = nowKst();
     const [
         announcements,
         monthSchedules,
@@ -41,7 +44,7 @@ export default async function GuildHomePage() {
         openAuctions,
     ] = await Promise.all([
         getAnnouncements(),
-        getSchedulesForMonth(now.getFullYear(), now.getMonth() + 1),
+        getSchedulesForMonth(now.year(), now.month() + 1),
         getSchedulesForCheckin(),
         getBossTimers(),
         getOfficialForumNotices(OFFICIAL_FORUM_NOTICE_MENU_SEQ),
@@ -81,8 +84,8 @@ export default async function GuildHomePage() {
     const auctionsByDeadline = openAuctions
         .filter((row) => !isAuctionEnded(row.loot))
         .sort((a, b) => {
-            const aTime = a.loot.bidDeadline ? new Date(a.loot.bidDeadline).getTime() : Infinity;
-            const bTime = b.loot.bidDeadline ? new Date(b.loot.bidDeadline).getTime() : Infinity;
+            const aTime = a.loot.bidDeadline ? bidDeadlineMs(a.loot.bidDeadline) : Infinity;
+            const bTime = b.loot.bidDeadline ? bidDeadlineMs(b.loot.bidDeadline) : Infinity;
             return aTime - bTime;
         });
     const displayedAuctions = auctionsByDeadline.slice(0, 5);

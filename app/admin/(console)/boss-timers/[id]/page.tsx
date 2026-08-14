@@ -4,6 +4,7 @@ import { BossTimerForm } from "@/components/organisms/boss-timer/BossTimerForm";
 import { FormField } from "@/components/molecules/FormField";
 import { Input } from "@/components/atoms/Input";
 import { Button } from "@/components/atoms/Button";
+import { formatFullDateTime } from "@/lib/time";
 
 export default async function EditBossTimerPage({
   params,
@@ -39,7 +40,7 @@ export default async function EditBossTimerPage({
           </form>
           {boss.lastKilledAt && (
             <p className="mt-2 text-sm text-ink-faint">
-              마지막 처치: {new Date(boss.lastKilledAt).toLocaleString("ko-KR")}
+              마지막 처치: {formatFullDateTime(boss.lastKilledAt)}
             </p>
           )}
         </div>

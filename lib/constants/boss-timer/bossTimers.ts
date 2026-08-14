@@ -1,4 +1,5 @@
 import { BossTimer, bossTimerTypes } from "@/lib/db/schema";
+import { dayjs, KST } from "@/lib/time";
 
 export const bossTimerTypeLabels: Record<(typeof bossTimerTypes)[number], string> = {
   fixed: "고정 시간",
@@ -10,25 +11,26 @@ export const bossTimerTypeLabels: Record<(typeof bossTimerTypes)[number], string
 const SUNDAY = 0;
 const WEDNESDAY = 3;
 
+// fixedTime("HH:MM")은 관리자가 입력한 KST 벽시계 시각이다 — new Date() +
+// 로컬 getter/setter를 쓰면 서버 런타임의 시간대(Vercel은 UTC)로 계산돼 실제
+// 출현 시각과 최대 9시간 어긋나는 문제가 있었다(2026-08-15 수정). dayjs를
+// KST에 명시적으로 고정해 계산하면 서버가 어느 시간대에서 돌든 결과가 같다.
 function nextWeeklyOccurrence(fixedTime: string, days: number[]): Date {
   const [hour, minute] = fixedTime.split(":").map(Number);
-  const candidate = new Date();
-  candidate.setHours(hour, minute, 0, 0);
-  while (!days.includes(candidate.getDay()) || candidate.getTime() <= Date.now()) {
-    candidate.setDate(candidate.getDate() + 1);
-    candidate.setHours(hour, minute, 0, 0);
+  let candidate = dayjs().tz(KST).hour(hour).minute(minute).second(0).millisecond(0);
+  while (!days.includes(candidate.day()) || candidate.valueOf() <= Date.now()) {
+    candidate = candidate.add(1, "day").hour(hour).minute(minute).second(0).millisecond(0);
   }
-  return candidate;
+  return candidate.toDate();
 }
 
 export function getNextSpawnAt(boss: BossTimer): Date | null {
   if (boss.type === "fixed") {
     if (!boss.fixedTime) return null;
     const [hour, minute] = boss.fixedTime.split(":").map(Number);
-    const next = new Date();
-    next.setHours(hour, minute, 0, 0);
-    if (next.getTime() <= Date.now()) next.setDate(next.getDate() + 1);
-    return next;
+    let next = dayjs().tz(KST).hour(hour).minute(minute).second(0).millisecond(0);
+    if (next.valueOf() <= Date.now()) next = next.add(1, "day");
+    return next.toDate();
   }
 
   if (boss.type === "weekly_wed_sun") {
