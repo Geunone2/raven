@@ -1,0 +1,1 @@
+ALTER TABLE `content_schedules` ADD `has_abyss_ding` integer DEFAULT false NOT NULL;

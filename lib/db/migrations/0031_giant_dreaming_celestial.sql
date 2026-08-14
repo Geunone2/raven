@@ -1,0 +1,1 @@
+ALTER TABLE `content_schedules` ADD `boss_points` integer;
