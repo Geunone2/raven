@@ -1,8 +1,14 @@
 import { notFound } from "next/navigation";
-import { getMember, getMemberStatHistory, updateMember } from "@/lib/actions/members";
+import {
+  getMember,
+  getMemberParticipationHistory,
+  getMemberStatHistory,
+  updateMember,
+} from "@/lib/actions/members";
 import { MemberForm } from "@/components/organisms/MemberForm";
 import { MemberStatTrendChart } from "@/components/organisms/MemberStatTrendChart";
 import { MemberCombinedStatTrendChart } from "@/components/organisms/MemberCombinedStatTrendChart";
+import { MemberParticipationHistoryTable } from "@/components/organisms/MemberParticipationHistoryTable";
 import { Button } from "@/components/atoms/Button";
 
 export default async function EditMemberPage({
@@ -12,9 +18,10 @@ export default async function EditMemberPage({
 }) {
   const { id } = await params;
   const memberId = Number(id);
-  const [member, history] = await Promise.all([
+  const [member, history, participationHistory] = await Promise.all([
     getMember(memberId),
     getMemberStatHistory(memberId),
+    getMemberParticipationHistory(memberId),
   ]);
 
   if (!member) {
@@ -60,6 +67,11 @@ export default async function EditMemberPage({
             저장
           </Button>
         </div>
+      </div>
+
+      <div>
+        <h2 className="mb-3 text-base font-bold text-brand">참여 이력</h2>
+        <MemberParticipationHistoryTable history={participationHistory} />
       </div>
     </div>
   );

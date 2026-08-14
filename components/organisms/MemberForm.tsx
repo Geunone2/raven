@@ -97,6 +97,20 @@ export function MemberForm({
         </FormField>
       </div>
 
+      <FormField label="참여도 점수 보정" htmlFor="participationPointsAdjustment">
+        <Input
+          id="participationPointsAdjustment"
+          name="participationPointsAdjustment"
+          type="number"
+          step="1"
+          defaultValue={member.participationPointsAdjustment}
+          className="max-w-40"
+        />
+        <p className="mt-1 text-xs text-ink-faint">
+          참여 체크 자동 합산 점수 위에 더하거나 뺄 보정값입니다. 음수도 입력할 수 있습니다.
+        </p>
+      </FormField>
+
       <FormField label="메모" htmlFor="memo">
         <Textarea id="memo" name="memo" defaultValue={member.memo ?? ""} rows={3} />
       </FormField>
