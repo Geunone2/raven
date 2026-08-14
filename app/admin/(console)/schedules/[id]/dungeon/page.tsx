@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getSchedule } from "@/lib/actions/schedules";
 import { getDungeonRun, saveDungeonRun } from "@/lib/actions/dungeonRuns";
 import { getParticipationsForSchedule } from "@/lib/actions/participations";
+import { getScheduleBasePoints } from "@/lib/constants/schedules";
 import { DungeonRunForm } from "@/components/organisms/DungeonRunForm";
 import { ParticipationTable } from "@/components/organisms/ParticipationTable";
 
@@ -23,12 +24,9 @@ export default async function DungeonRunPage({
     getParticipationsForSchedule(scheduleId),
   ]);
 
-  const plannedAttendCount = rows.filter(
-    (row) => row.participation?.plannedStatus === "attend"
-  ).length;
-  const actualPresentCount = rows.filter(
-    (row) => row.participation?.actualStatus === "present"
-  ).length;
+  const attendCount = rows.filter((row) => row.participation?.status === "attend").length;
+  const midJoinCount = rows.filter((row) => row.participation?.status === "mid_join").length;
+  const { total: basePoints } = getScheduleBasePoints(schedule);
 
   return (
     <div className="space-y-8">
@@ -37,11 +35,10 @@ export default async function DungeonRunPage({
           길드 던전 기록 — {schedule.title}
         </h1>
         <p className="mt-1 text-sm text-ink-faint">
-          {schedule.date} · 집결 {schedule.gatherTime ?? "-"} · 시작{" "}
-          {schedule.startTime}
+          {schedule.date} · 시작 {schedule.startTime}
         </p>
         <p className="mt-1 text-sm text-ink-faint">
-          참석 예정 {plannedAttendCount}명 · 실제 참석 {actualPresentCount}명
+          참석 {attendCount}명 · 중간합류 {midJoinCount}명
         </p>
       </div>
 
@@ -51,7 +48,7 @@ export default async function DungeonRunPage({
         <h2 className="mb-3 text-sm font-medium text-ink">
           참여 체크
         </h2>
-        <ParticipationTable scheduleId={scheduleId} rows={rows} />
+        <ParticipationTable scheduleId={scheduleId} rows={rows} basePoints={basePoints} />
       </div>
     </div>
   );

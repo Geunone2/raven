@@ -2,13 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ContentSchedule } from "@/lib/db/schema";
-import {
-  contentTypeLabels,
-  contentTypeTone,
-  getEffectiveScheduleStatus,
-  scheduleStatusLabels,
-  scheduleStatusTone,
-} from "@/lib/constants/schedules";
+import { contentTypeLabels, contentTypeTone } from "@/lib/constants/schedules";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { hashTone } from "@/lib/colorHash";
@@ -42,9 +36,7 @@ export function ScheduleCardList({ schedules }: { schedules: ContentSchedule[] }
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3">
-        {paged.map((schedule) => {
-          const effectiveStatus = getEffectiveScheduleStatus(schedule);
-          return (
+        {paged.map((schedule) => (
           <div
             key={schedule.id}
             className="flex flex-col gap-3 rounded-xl border border-edge bg-surface p-4 text-sm shadow-md sm:flex-row sm:items-center sm:gap-4"
@@ -52,7 +44,7 @@ export function ScheduleCardList({ schedules }: { schedules: ContentSchedule[] }
             <div className="flex items-baseline gap-2 sm:w-32 sm:shrink-0 sm:flex-col sm:items-start sm:gap-0.5">
               <span className="whitespace-nowrap font-semibold text-ink">{schedule.date}</span>
               <span className="whitespace-nowrap text-xs text-ink-faint">
-                {schedule.gatherTime ?? "-"} / {schedule.startTime}
+                {schedule.startTime}
               </span>
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -67,13 +59,10 @@ export function ScheduleCardList({ schedules }: { schedules: ContentSchedule[] }
               <span className="truncate font-medium text-ink">{schedule.title}</span>
             </div>
             <div className="sm:shrink-0">
-              <Badge tone={scheduleStatusTone[effectiveStatus]}>
-                {scheduleStatusLabels[effectiveStatus]}
-              </Badge>
+              <Badge tone={hashTone(schedule.targetGuild)}>{schedule.targetGuild}</Badge>
             </div>
           </div>
-          );
-        })}
+        ))}
       </div>
 
       {pageCount > 1 && (

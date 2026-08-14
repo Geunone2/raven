@@ -8,17 +8,33 @@ import {
   bossTiers,
   contentSchedules,
   contentTypes,
-  scheduleStatuses,
-  targetAudiences,
+  SCHEDULE_TARGET_GUILDS,
 } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/auth/adminSession";
 import { dateStringWithOffset, todayDateString } from "@/lib/time";
-import { isScheduleCheckinClosed } from "@/lib/constants/schedules";
+import {
+  isScheduleCheckinClosed,
+  SCHEDULE_PERIOD_LOOKBACK_DAYS,
+  type SchedulePeriod,
+} from "@/lib/constants/schedules";
 
-export async function getSchedules(filters: { type?: string } = {}) {
+// period가 없으면(기존 호출부 — /schedule, /admin/loots/*) 날짜 제한 없이 전체를
+// 내려준다. 관리자 일정표(/admin/schedules)만 명시적으로 period를 넘겨서
+// "오늘 / 내일 / 하루 전 / 일주일 전까지 / 한달 전까지 / 전체"를 서버에서 직접 필터링한다.
+export async function getSchedules(
+  filters: { type?: string; period?: SchedulePeriod } = {}
+) {
   const conditions = [];
   if (filters.type && (contentTypes as readonly string[]).includes(filters.type)) {
     conditions.push(eq(contentSchedules.type, filters.type as (typeof contentTypes)[number]));
+  }
+  if (filters.period === "tomorrow") {
+    conditions.push(eq(contentSchedules.date, dateStringWithOffset(1)));
+  } else if (filters.period && filters.period !== "all") {
+    const from = dateStringWithOffset(-SCHEDULE_PERIOD_LOOKBACK_DAYS[filters.period]);
+    const to = todayDateString();
+    conditions.push(gte(contentSchedules.date, from));
+    conditions.push(lte(contentSchedules.date, to));
   }
 
   return db
@@ -76,22 +92,22 @@ function parseScheduleForm(formData: FormData) {
     type: String(formData.get("type") ?? "guild_dungeon") as (typeof contentTypes)[number],
     title: String(formData.get("title") ?? "").trim(),
     date: String(formData.get("date") ?? ""),
-    gatherTime: String(formData.get("gatherTime") ?? "") || null,
     startTime: String(formData.get("startTime") ?? ""),
-    expectedEndTime: String(formData.get("expectedEndTime") ?? "") || null,
-    targetAudience: String(
-      formData.get("targetAudience") ?? "all"
-    ) as (typeof targetAudiences)[number],
+    targetGuild: String(
+      formData.get("targetGuild") ?? "전체"
+    ) as (typeof SCHEDULE_TARGET_GUILDS)[number],
     serverName: String(formData.get("serverName") ?? "").trim() || null,
-    location: String(formData.get("location") ?? "") || null,
-    requiredItem: String(formData.get("requiredItem") ?? "") || null,
     noticeText: String(formData.get("noticeText") ?? "") || null,
-    status: String(formData.get("status") ?? "scheduled") as (typeof scheduleStatuses)[number],
     bossTier: String(formData.get("bossTier") ?? "none") as (typeof bossTiers)[number],
+    // 비워두면 null → getScheduleBasePoints가 보스 등급 기준 자동 계산값을 쓴다.
+    bossPoints: formData.get("bossPoints")
+      ? Number(formData.get("bossPoints"))
+      : null,
     hasCombat: formData.get("hasCombat") === "on",
     combatHours: formData.get("combatHours")
       ? Number(formData.get("combatHours"))
       : null,
+    hasAbyssDing: formData.get("hasAbyssDing") === "on",
   };
 }
 

@@ -1,19 +1,14 @@
+import { ContentSchedule, bossTiers, contentTypes, SCHEDULE_TARGET_GUILDS } from "@/lib/db/schema";
 import {
-  ContentSchedule,
-  bossTiers,
-  contentTypes,
-  scheduleStatuses,
-  targetAudiences,
-} from "@/lib/db/schema";
-import {
+  ABYSS_DING_POINTS,
   bossTierLabels,
+  bossTierPoints,
   contentTypeLabels,
-  scheduleStatusLabels,
-  targetAudienceLabels,
+  SERVERS,
 } from "@/lib/constants/schedules";
 import { FormField } from "@/components/molecules/FormField";
 import { Input } from "@/components/atoms/Input";
-import { Select } from "@/components/atoms/Select";
+import { CustomSelect } from "@/components/atoms/CustomSelect";
 import { Textarea } from "@/components/atoms/Textarea";
 import { Button } from "@/components/atoms/Button";
 
@@ -26,32 +21,26 @@ export function ScheduleForm({
 }) {
   return (
     <form action={action} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="콘텐츠 종류" htmlFor="type">
-          <Select id="type" name="type" defaultValue={schedule?.type ?? "guild_dungeon"}>
-            {contentTypes.map((type) => (
-              <option key={type} value={type}>
-                {contentTypeLabels[type]}
-              </option>
-            ))}
-          </Select>
+          <CustomSelect
+            id="type"
+            name="type"
+            defaultValue={schedule?.type ?? contentTypes[0]}
+            options={contentTypes.map((type) => ({
+              value: type,
+              label: contentTypeLabels[type],
+            }))}
+          />
         </FormField>
         <FormField label="제목" htmlFor="title">
           <Input id="title" name="title" defaultValue={schedule?.title} required />
         </FormField>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="날짜" htmlFor="date">
           <Input id="date" name="date" type="date" defaultValue={schedule?.date} required />
-        </FormField>
-        <FormField label="집결 시간" htmlFor="gatherTime">
-          <Input
-            id="gatherTime"
-            name="gatherTime"
-            type="time"
-            defaultValue={schedule?.gatherTime ?? ""}
-          />
         </FormField>
         <FormField label="시작 시간" htmlFor="startTime">
           <Input
@@ -64,70 +53,36 @@ export function ScheduleForm({
         </FormField>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <FormField label="예상 종료 시간" htmlFor="expectedEndTime">
-          <Input
-            id="expectedEndTime"
-            name="expectedEndTime"
-            type="time"
-            defaultValue={schedule?.expectedEndTime ?? ""}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <FormField label="참여 길드" htmlFor="targetGuild">
+          <CustomSelect
+            id="targetGuild"
+            name="targetGuild"
+            defaultValue={schedule?.targetGuild ?? SCHEDULE_TARGET_GUILDS[0]}
+            options={SCHEDULE_TARGET_GUILDS.map((guild) => ({ value: guild, label: guild }))}
           />
         </FormField>
-        <FormField label="참여 대상" htmlFor="targetAudience">
-          <Select
-            id="targetAudience"
-            name="targetAudience"
-            defaultValue={schedule?.targetAudience ?? "all"}
-          >
-            {targetAudiences.map((audience) => (
-              <option key={audience} value={audience}>
-                {targetAudienceLabels[audience]}
-              </option>
-            ))}
-          </Select>
-        </FormField>
-        <FormField label="진행 상태" htmlFor="status">
-          <Select id="status" name="status" defaultValue={schedule?.status ?? "scheduled"}>
-            {scheduleStatuses.map((status) => (
-              <option key={status} value={status}>
-                {scheduleStatusLabels[status]}
-              </option>
-            ))}
-          </Select>
-        </FormField>
-      </div>
-
-      <div className="grid grid-cols-3 gap-4">
         <FormField label="서버" htmlFor="serverName">
-          <Input
+          <CustomSelect
             id="serverName"
             name="serverName"
             defaultValue={schedule?.serverName ?? ""}
-            placeholder="예: 메투스"
-          />
-        </FormField>
-        <FormField label="장소" htmlFor="location">
-          <Input id="location" name="location" defaultValue={schedule?.location ?? ""} />
-        </FormField>
-        <FormField label="준비물" htmlFor="requiredItem">
-          <Input
-            id="requiredItem"
-            name="requiredItem"
-            defaultValue={schedule?.requiredItem ?? ""}
-            placeholder="입장권, 물약, 버프"
+            options={[
+              { value: "", label: "(미지정)" },
+              ...SERVERS.map((server) => ({ value: server, label: server })),
+            ]}
           />
         </FormField>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <FormField label="보스 등급" htmlFor="bossTier">
-          <Select id="bossTier" name="bossTier" defaultValue={schedule?.bossTier ?? "none"}>
-            {bossTiers.map((tier) => (
-              <option key={tier} value={tier}>
-                {bossTierLabels[tier]}
-              </option>
-            ))}
-          </Select>
+          <CustomSelect
+            id="bossTier"
+            name="bossTier"
+            defaultValue={schedule?.bossTier ?? "none"}
+            options={bossTiers.map((tier) => ({ value: tier, label: bossTierLabels[tier] }))}
+          />
         </FormField>
         <div className="flex items-end pb-2">
           <label htmlFor="hasCombat" className="flex items-center gap-2 text-sm text-ink">
@@ -152,7 +107,38 @@ export function ScheduleForm({
             placeholder="전투 포함 시에만 반영"
           />
         </FormField>
+        <div className="flex items-end pb-2">
+          <label htmlFor="hasAbyssDing" className="flex items-center gap-2 text-sm text-ink">
+            <input
+              id="hasAbyssDing"
+              name="hasAbyssDing"
+              type="checkbox"
+              defaultChecked={schedule?.hasAbyssDing ?? false}
+              className="size-4 rounded border-edge-strong"
+            />
+            어비스 띵 (+{ABYSS_DING_POINTS}점)
+          </label>
+        </div>
       </div>
+
+      <FormField label="보스 기여도 점수" htmlFor="bossPoints">
+        <Input
+          id="bossPoints"
+          name="bossPoints"
+          type="number"
+          min="0"
+          step="0.5"
+          defaultValue={schedule?.bossPoints ?? ""}
+          placeholder="비우면 자동 계산"
+          className="max-w-40"
+        />
+        <p className="mt-1 text-xs text-ink-faint">
+          비우면 보스 등급 기준(3성 {bossTierPoints.star3}점 · 4성 {bossTierPoints.star4}점 ·
+          5성 {bossTierPoints.star5}점 · 어비스보스 {bossTierPoints.abyss_boss}점)으로 자동
+          계산되고, 값을 입력하면 그 점수가 우선 적용됩니다. 중간합류자는 이 점수의 절반을
+          받습니다.
+        </p>
+      </FormField>
 
       <FormField label="공지 문구" htmlFor="noticeText">
         <Textarea

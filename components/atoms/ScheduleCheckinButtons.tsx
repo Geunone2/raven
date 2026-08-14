@@ -63,6 +63,14 @@ export function ScheduleCheckinButtons({
           name="status"
           value={status}
           onClick={(event) => {
+            // 이미 저장된 상태와 같은 버튼을 다시 누르면 서버에 요청을 보낼
+            // 필요가 없다 — 여기서 바로 막고 안내만 띄운다(디바운스 잠금도
+            // 안 걸어서, 이 클릭 직후 다른 상태를 눌러도 정상 처리된다).
+            if (status === myStatus) {
+              event.preventDefault();
+              showToast(`이미 ${attendanceStatusLabels[status]}(으)로 응답했습니다.`, STATUS_TOAST_TONE[status]);
+              return;
+            }
             if (!guardClick(event)) return;
             lastStatusRef.current = status;
           }}

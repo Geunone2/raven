@@ -23,8 +23,9 @@ export type Tone =
   | "contentGuildDungeon"
   | "contentAbyss"
   | "contentFieldBoss"
-  | "contentRift"
   | "contentAncientFortress"
+  | "contentSiege"
+  | "contentAbyssBattle"
   | "contentOther";
 
 const toneClasses: Record<Tone, string> = {
@@ -50,8 +51,9 @@ const toneClasses: Record<Tone, string> = {
   contentGuildDungeon: "bg-content-guild-dungeon/15 text-content-guild-dungeon",
   contentAbyss: "bg-content-abyss/15 text-content-abyss",
   contentFieldBoss: "bg-content-field-boss/15 text-content-field-boss",
-  contentRift: "bg-content-rift/15 text-content-rift",
   contentAncientFortress: "bg-content-ancient-fortress/15 text-content-ancient-fortress",
+  contentSiege: "bg-content-siege/15 text-content-siege",
+  contentAbyssBattle: "bg-content-abyss-battle/15 text-content-abyss-battle",
   contentOther: "bg-content-other/15 text-content-other",
 };
 

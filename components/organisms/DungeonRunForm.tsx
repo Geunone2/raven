@@ -10,7 +10,7 @@ import {
   distributionStatusLabels,
 } from "@/lib/constants/dungeonRuns";
 import { FormField } from "@/components/molecules/FormField";
-import { Select } from "@/components/atoms/Select";
+import { CustomSelect } from "@/components/atoms/CustomSelect";
 import { Textarea } from "@/components/atoms/Textarea";
 import { Button } from "@/components/atoms/Button";
 
@@ -23,38 +23,42 @@ export function DungeonRunForm({
 }) {
   return (
     <form action={action} className="space-y-4">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <FormField label="난이도" htmlFor="difficulty">
-          <Select id="difficulty" name="difficulty" defaultValue={run?.difficulty ?? "normal"}>
-            {dungeonDifficulties.map((difficulty) => (
-              <option key={difficulty} value={difficulty}>
-                {difficultyLabels[difficulty]}
-              </option>
-            ))}
-          </Select>
+          <CustomSelect
+            id="difficulty"
+            name="difficulty"
+            defaultValue={run?.difficulty ?? "normal"}
+            options={dungeonDifficulties.map((difficulty) => ({
+              value: difficulty,
+              label: difficultyLabels[difficulty],
+            }))}
+          />
         </FormField>
         <FormField label="클리어 결과" htmlFor="clearResult">
-          <Select id="clearResult" name="clearResult" defaultValue={run?.clearResult ?? ""}>
-            <option value="">미확정</option>
-            {dungeonClearResults.map((result) => (
-              <option key={result} value={result}>
-                {clearResultLabels[result]}
-              </option>
-            ))}
-          </Select>
+          <CustomSelect
+            id="clearResult"
+            name="clearResult"
+            defaultValue={run?.clearResult ?? ""}
+            options={[
+              { value: "", label: "미확정" },
+              ...dungeonClearResults.map((result) => ({
+                value: result,
+                label: clearResultLabels[result],
+              })),
+            ]}
+          />
         </FormField>
         <FormField label="분배 상태" htmlFor="distributionStatus">
-          <Select
+          <CustomSelect
             id="distributionStatus"
             name="distributionStatus"
             defaultValue={run?.distributionStatus ?? "undistributed"}
-          >
-            {lootDistributionStatuses.map((status) => (
-              <option key={status} value={status}>
-                {distributionStatusLabels[status]}
-              </option>
-            ))}
-          </Select>
+            options={lootDistributionStatuses.map((status) => ({
+              value: status,
+              label: distributionStatusLabels[status],
+            }))}
+          />
         </FormField>
       </div>
 

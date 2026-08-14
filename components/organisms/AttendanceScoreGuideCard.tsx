@@ -31,9 +31,9 @@ export function AttendanceScoreGuideCard() {
       <p className="text-sm font-bold text-brand">출석 점수 안내</p>
 
       <div className="mt-2 grid grid-cols-4 gap-1.5">
-        <BossScore stars={2} label="2성 보스" points="1점" />
         <BossScore stars={3} label="3성 보스" points="3점" />
-        <BossScore stars={4} label="4성 보스" points="3점" />
+        <BossScore stars={4} label="4성 보스" points="6점" />
+        <BossScore stars={5} label="5성 보스" points="6점" />
         <BossScore label="어비스 보스" points="6점" />
       </div>
 
@@ -42,8 +42,14 @@ export function AttendanceScoreGuideCard() {
         <span className="font-bold text-brand">1시간당 3점 추가</span>
       </div>
 
+      <div className="mt-1.5 flex items-center justify-between rounded-md border border-danger/25 bg-danger/10 px-2 py-1.5 text-xs">
+        <span className="font-semibold text-danger">어비스 띵</span>
+        <span className="font-bold text-brand">6점 추가</span>
+      </div>
+
       <p className="mt-1.5 text-[11px] text-ink-faint">
-        * 중간합류 시 해당 점수의 1/2이 부여됩니다.
+        * 위 점수는 운영진이 일정별로 직접 조정할 수 있습니다. 중간합류 시 최종 점수의 1/2이
+        부여됩니다.
       </p>
     </div>
   );
