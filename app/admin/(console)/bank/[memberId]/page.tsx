@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
-import { getBankBalance, getBankTransactions, createBankTransaction } from "@/lib/actions/bank";
-import { getMember } from "@/lib/actions/members";
-import { BankAdjustForm } from "@/components/organisms/BankAdjustForm";
-import { BankTransactionTable } from "@/components/organisms/BankTransactionTable";
+import { getBankBalance, getBankTransactions, createBankTransaction } from "@/lib/actions/treasury/bank";
+import { getMember } from "@/lib/actions/member/members";
+import { BankAdjustForm } from "@/components/organisms/treasury/BankAdjustForm";
+import { BankTransactionTable } from "@/components/organisms/treasury/BankTransactionTable";
 
 export default async function MemberBankPage({
   params,

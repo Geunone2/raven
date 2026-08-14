@@ -1,6 +1,6 @@
-import { getAnnouncements } from "@/lib/actions/announcements";
-import { AnnouncementFilterBar } from "@/components/organisms/AnnouncementFilterBar";
-import { AnnouncementList } from "@/components/organisms/AnnouncementList";
+import { getAnnouncements } from "@/lib/actions/announcement/announcements";
+import { AnnouncementFilterBar } from "@/components/organisms/announcement/AnnouncementFilterBar";
+import { AnnouncementList } from "@/components/organisms/announcement/AnnouncementList";
 
 export default async function AnnouncementsPage({
   searchParams,

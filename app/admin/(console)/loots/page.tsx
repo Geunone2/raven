@@ -1,9 +1,9 @@
-import { getLoots } from "@/lib/actions/loots";
-import { getUnsettledContentRewardSchedules } from "@/lib/actions/contentRewards";
-import { LootFilterBar } from "@/components/organisms/LootFilterBar";
-import { LootTable } from "@/components/organisms/LootTable";
-import { ContentRewardSettlementPanel } from "@/components/organisms/ContentRewardSettlementPanel";
-import { LootDistributionTabs } from "@/components/organisms/LootDistributionTabs";
+import { getLoots } from "@/lib/actions/loot/loots";
+import { getUnsettledContentRewardSchedules } from "@/lib/actions/treasury/contentRewards";
+import { LootFilterBar } from "@/components/organisms/loot/LootFilterBar";
+import { LootTable } from "@/components/organisms/loot/LootTable";
+import { ContentRewardSettlementPanel } from "@/components/organisms/treasury/ContentRewardSettlementPanel";
+import { LootDistributionTabs } from "@/components/organisms/loot/LootDistributionTabs";
 
 export default async function LootsPage({
   searchParams,

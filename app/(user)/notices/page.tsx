@@ -1,5 +1,5 @@
-import { getNoticesPage } from "@/lib/actions/notices";
-import { NoticeFeed } from "@/components/organisms/NoticeFeed";
+import { getNoticesPage } from "@/lib/actions/announcement/notices";
+import { NoticeFeed } from "@/components/organisms/community/NoticeFeed";
 
 export default async function NoticesPage() {
   const { items, hasMore } = await getNoticesPage({ category: "all", query: "", page: 1 });

@@ -75,6 +75,21 @@ export function formatMonthDayTimeUtcWithSeconds(input: Date | number | string):
   return `${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
+// 엑셀 내보내기 전용 — 화면 표시용 포맷(연도 생략)과 달리, 엑셀은 나중에/다른
+// 맥락에서 열어볼 수 있어서 연도를 포함한 전체 날짜를 쓴다. LootTable.tsx와
+// MemberPanel.tsx에 완전히 동일한 함수가 중복돼 있던 것을 이쪽으로 옮겼다
+// (2026-08-15).
+export function formatFullDateTime(input: string): string {
+  const date = new Date(toEpochMs(input));
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
 // For <input type="datetime-local"> values ("YYYY-MM-DDTHH:MM", no timezone
 // marker) — these are meant as local wall-clock time, so parse them directly
 // with `new Date()` rather than `toEpochMs`, which would force a UTC read

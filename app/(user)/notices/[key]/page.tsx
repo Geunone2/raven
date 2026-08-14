@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
-import { getNoticeDetail } from "@/lib/actions/notices";
-import { SourceLabel } from "@/components/atoms/SourceLabel";
+import { getNoticeDetail } from "@/lib/actions/announcement/notices";
+import { SourceLabel } from "@/components/organisms/community/SourceLabel";
 import { Badge } from "@/components/atoms/Badge";
 import { RICH_TEXT_CLASS } from "@/lib/richText";
 
