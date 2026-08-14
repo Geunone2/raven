@@ -3,14 +3,11 @@ import { BossTimer } from "@/lib/db/schema";
 import { bossTimerTypeLabels, getNextSpawnAt } from "@/lib/constants/boss-timer/bossTimers";
 import { Badge } from "@/components/atoms/Badge";
 import { deleteBossTimer } from "@/lib/actions/boss-timer/bossTimers";
+import { formatMonthDayTimeUtc } from "@/lib/time";
 
 function formatSpawn(date: Date | null) {
   if (!date) return "미확인";
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hour = String(date.getHours()).padStart(2, "0");
-  const minute = String(date.getMinutes()).padStart(2, "0");
-  return `${month}-${day} ${hour}:${minute}`;
+  return formatMonthDayTimeUtc(date);
 }
 
 export function BossTimerTable({

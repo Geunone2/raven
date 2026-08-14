@@ -8,19 +8,20 @@ import {
 import { Badge } from "@/components/atoms/Badge";
 import { PaginationControls } from "@/components/molecules/PaginationControls";
 import { usePagination } from "@/lib/hooks/usePagination";
-import { toEpochMs } from "@/lib/time";
+import { formatDateTimeMinute } from "@/lib/time";
 
 const PAGE_SIZE = 10;
 
 // 지출 항목은 운영진이 직접 고른 날짜(YYYY-MM-DD, 시간 정보 없음)를 쓰고,
 // 그 외 타입은 createdAt의 날짜 부분을 쓴다 — 시간은 어느 쪽이든 실제 생성
 // 시각(createdAt)에서 가져와 항상 "YYYY-MM-DD HH:MM" 한 가지 형태로 보여준다.
+// createdAt은 KST로 변환해서 시:분을 뽑는다 — 예전엔 UTC 문자열을 그냥 자르거나
+// (tx.date 없는 경우 날짜 부분) 로컬 getter를 써서(시:분 부분), 서버(UTC)와
+// 브라우저(KST) 렌더 결과가 달라 하이드레이션 불일치가 났었다(2026-08-15 수정).
 function formatDateTime(tx: GuildTreasuryTransaction): string {
-  const datePart = tx.date ?? tx.createdAt.slice(0, 10);
-  const created = new Date(toEpochMs(tx.createdAt));
-  const hours = String(created.getHours()).padStart(2, "0");
-  const minutes = String(created.getMinutes()).padStart(2, "0");
-  return `${datePart} ${hours}:${minutes}`;
+  const full = formatDateTimeMinute(tx.createdAt);
+  if (tx.date) return `${tx.date} ${full.slice(11)}`;
+  return full;
 }
 
 export function TreasuryTable({

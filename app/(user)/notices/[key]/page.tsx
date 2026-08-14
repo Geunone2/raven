@@ -5,17 +5,10 @@ import { getNoticeDetail } from "@/lib/actions/announcement/notices";
 import { SourceLabel } from "@/components/organisms/community/SourceLabel";
 import { Badge } from "@/components/atoms/Badge";
 import { RICH_TEXT_CLASS } from "@/lib/richText";
+import { formatDateOnly } from "@/lib/time";
 
 const buttonClass =
   "inline-flex items-center gap-2 rounded-xl border border-edge bg-surface px-4 py-2.5 text-base text-ink-muted shadow-md hover:bg-surface-hover";
-
-function formatDate(date: number) {
-  const d = new Date(date);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
 
 export default async function NoticeDetailPage({
   params,
@@ -54,7 +47,7 @@ export default async function NoticeDetailPage({
           <SourceLabel source={notice.source} />
           {notice.isPinned && <Badge tone="warning">고정</Badge>}
           <span className="ml-auto shrink-0 text-xs text-ink-faint">
-            {formatDate(notice.date)}
+            {formatDateOnly(notice.date)}
           </span>
         </div>
 

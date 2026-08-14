@@ -10,19 +10,16 @@ import {
   YAxis,
 } from "recharts";
 import { MemberStatHistory } from "@/lib/db/schema";
-import { formatMonthDay, toEpochMs } from "@/lib/time";
+import { formatDateOnly, formatMonthDay } from "@/lib/time";
 
 // MemberCombinedStatTrendChart.tsx(종합 추이 — 4개 지표를 한 그래프에)도
 // 동일한 일별 집계 규칙을 쓰므로 같이 export한다.
 export const MAX_DAYS = 7;
 
-// recordedAt(UTC SQLite 타임스탬프)을 관리자/회원이 보는 로컬 달력 날짜로
-// 묶기 위한 키. "MM-DD"만 쓰면 연도가 다른 같은 날짜가 하나로 뭉쳐버릴 수
-// 있어 연도까지 포함한다(표시는 formatMonthDay로 따로, 연도 없이).
-function localDateKey(recordedAt: string): string {
-  const date = new Date(toEpochMs(recordedAt));
-  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-}
+// recordedAt(UTC 타임스탬프)을 KST 달력 날짜로 묶기 위한 키(표시는 formatMonthDay로
+// 따로, 연도 없이). 예전엔 로컬 getter를 써서 서버(UTC)와 브라우저(KST)가 자정~
+// 오전 9시(KST) 사이엔 다른 날짜로 묶는 문제가 있었다(2026-08-15 수정).
+const localDateKey = formatDateOnly;
 
 // 같은 날 여러 번 입력했으면 그날의 마지막 값만 남기고 하루 단위로 묶는다.
 // history는 recordedAt 오름차순으로 들어오므로, 각 날짜 키에 마지막으로

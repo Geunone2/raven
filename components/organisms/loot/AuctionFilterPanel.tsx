@@ -2,7 +2,7 @@
 
 import {useMemo, useState} from "react";
 import {GuildMember, Loot, LootBid} from "@/lib/db/schema";
-import {isAuctionEnded} from "@/lib/constants/loot/loots";
+import {bidDeadlineMs, isAuctionEnded} from "@/lib/constants/loot/loots";
 import {GUILD_NAMES} from "@/lib/constants/member/members";
 import {Button} from "@/components/atoms/Button";
 import {Badge} from "@/components/atoms/Badge";
@@ -49,8 +49,8 @@ export function AuctionFilterPanel({
             const bEnded = isAuctionEnded(b.loot) ? 1 : 0;
             if (aEnded !== bEnded) return aEnded - bEnded;
 
-            const aTime = a.loot.bidDeadline ? new Date(a.loot.bidDeadline).getTime() : Infinity;
-            const bTime = b.loot.bidDeadline ? new Date(b.loot.bidDeadline).getTime() : Infinity;
+            const aTime = a.loot.bidDeadline ? bidDeadlineMs(a.loot.bidDeadline) : Infinity;
+            const bTime = b.loot.bidDeadline ? bidDeadlineMs(b.loot.bidDeadline) : Infinity;
             return aTime - bTime;
         });
     }, [rows, filter, guildFilter]);

@@ -9,7 +9,7 @@ import { Input } from "@/components/atoms/Input";
 import { Badge } from "@/components/atoms/Badge";
 import { SourceLabel } from "@/components/organisms/community/SourceLabel";
 import { NewBadge } from "@/components/atoms/NewBadge";
-import { isWithinLast24Hours } from "@/lib/time";
+import { formatDateOnly, isWithinLast24Hours } from "@/lib/time";
 
 const CATEGORY_OPTIONS: { value: NoticeCategory; label: string }[] = [
   { value: "all", label: "전체" },
@@ -18,14 +18,6 @@ const CATEGORY_OPTIONS: { value: NoticeCategory; label: string }[] = [
   { value: "update", label: "업데이트" },
   { value: "devnote", label: "개발자노트" },
 ];
-
-function formatDate(date: number) {
-  const d = new Date(date);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
 
 export function NoticeFeed({
   initialItems,
@@ -145,7 +137,7 @@ export function NoticeFeed({
                   <SourceLabel source={item.source} />
                   {item.isPinned && <Badge tone="warning">고정</Badge>}
                   <span className="ml-auto shrink-0 text-xs text-ink-faint">
-                    {formatDate(item.date)}
+                    {formatDateOnly(item.date)}
                   </span>
                 </div>
                 <Link

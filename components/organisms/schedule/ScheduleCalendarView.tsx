@@ -7,6 +7,7 @@ import { contentTypeLabels, contentTypeTone } from "@/lib/constants/schedule/sch
 import { Badge } from "@/components/atoms/Badge";
 import { CalendarDropdown } from "@/components/atoms/CalendarDropdown";
 import { hashTone } from "@/lib/colorHash";
+import { nowKst } from "@/lib/time";
 
 function toDateKey(date: Date) {
   const year = date.getFullYear();
@@ -20,8 +21,18 @@ function parseDateKey(dateKey: string) {
   return new Date(year, month - 1, day);
 }
 
+// KST 기준 "오늘"을 로컬 Date 생성자로 명시적으로 다시 만든다 — new Date()를
+// 그대로 쓰면 서버(UTC)와 브라우저(KST)가 자정~오전 9시(KST) 사이엔 서로 다른
+// 날짜를 "오늘"로 계산해서 하이드레이션이 어긋났다(2026-08-15 수정). 이렇게
+// 명시적인 연/월/일로 다시 생성해두면, 이후 어떤 런타임에서 getFullYear() 등
+// 로컬 getter로 읽어도(toDateKey 등) 항상 같은 값이 나온다.
+function getTodayKst() {
+  const kst = nowKst();
+  return new Date(kst.year(), kst.month(), kst.date());
+}
+
 export function ScheduleCalendarView({ schedules }: { schedules: ContentSchedule[] }) {
-  const today = new Date();
+  const [today] = useState(getTodayKst);
   const [selected, setSelected] = useState<Date>(today);
   const currentYear = today.getFullYear();
   const startMonth = new Date(currentYear - 3, 0);

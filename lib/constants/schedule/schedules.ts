@@ -1,5 +1,6 @@
 import { bossTiers, contentTypes, SCHEDULE_TARGET_GUILDS } from "@/lib/db/schema";
 import type { Tone } from "@/components/atoms/Badge";
+import { dayjs, KST } from "@/lib/time";
 
 export const contentTypeLabels: Record<(typeof contentTypes)[number], string> = {
   guild_dungeon: "길드 던전",
@@ -143,16 +144,19 @@ export type ScheduleCheckinResult = { ok: boolean; message: string } | null;
 
 const CHECKIN_GRACE_MS = 6 * 60 * 60 * 1000;
 
-// schedule.date + schedule.startTime는 로컬 시각(시간대 마커 없음)이라, UTC로 강제
-// 변환하는 toEpochMs() 대신 datetime-local 값과 동일하게 new Date()로 직접 파싱한다.
+// schedule.date + schedule.startTime는 운영진이 입력한 KST 벽시계 시각이다 —
+// new Date(`${date}T${startTime}`)로 그냥 파싱하면 서버 런타임의 시간대(Vercel은
+// UTC)로 잘못 해석돼, 출석 체크 시작/마감 판정이 최대 9시간 어긋나는 버그가
+// 있었다(2026-08-15 수정). dayjs.tz로 KST를 명시해서 서버가 어느 시간대에서
+// 돌든 항상 같은 결과가 나오게 한다.
 // 출석 체크 버튼은 일정 시작 전에는 아직 나타나지 않는다(2026-08-14).
 export function isScheduleCheckinNotStarted(schedule: { date: string; startTime: string }): boolean {
-  const startMs = new Date(`${schedule.date}T${schedule.startTime}`).getTime();
+  const startMs = dayjs.tz(`${schedule.date}T${schedule.startTime}`, KST).valueOf();
   return Date.now() < startMs;
 }
 
 // 출석 체크는 일정 시작 후 6시간까지만 입력받고, 그 이후에는 응답을 막는다.
 export function isScheduleCheckinClosed(schedule: { date: string; startTime: string }): boolean {
-  const startMs = new Date(`${schedule.date}T${schedule.startTime}`).getTime();
+  const startMs = dayjs.tz(`${schedule.date}T${schedule.startTime}`, KST).valueOf();
   return Date.now() - startMs > CHECKIN_GRACE_MS;
 }

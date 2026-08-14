@@ -7,6 +7,7 @@ import {
   lootGrades,
 } from "@/lib/db/schema";
 import type { Tone } from "@/components/atoms/Badge";
+import { dayjs, KST } from "@/lib/time";
 
 export type BidResult = { ok: boolean; message: string } | null;
 
@@ -59,10 +60,17 @@ export const lootCategoryTone: Record<(typeof lootCategories)[number], Tone> = {
   other: "other",
 };
 
+// bidDeadline은 운영진이 입력한 KST 벽시계 시각(datetime-local)이다 —
+// new Date(bidDeadline)로 그냥 파싱하면 서버 런타임의 시간대(Vercel은 UTC)로
+// 잘못 해석돼 경매 마감이 최대 9시간 어긋나는 버그가 있었다(2026-08-15 수정).
+export function bidDeadlineMs(bidDeadline: string): number {
+  return dayjs.tz(bidDeadline, KST).valueOf();
+}
+
 // 낙찰 처리됐거나 입찰 마감 시각이 지났으면 더 이상 입찰을 받지 않는다.
 export function isAuctionEnded(loot: Loot): boolean {
   if (loot.status === "completed") return true;
-  if (loot.bidDeadline && new Date(loot.bidDeadline).getTime() <= Date.now()) return true;
+  if (loot.bidDeadline && bidDeadlineMs(loot.bidDeadline) <= Date.now()) return true;
   return false;
 }
 
@@ -71,7 +79,7 @@ const DEADLINE_IMMINENT_MS = 60 * 60 * 1000;
 // 아직 안 끝났지만 마감까지 1시간이 채 안 남은 경우 — 카드에 임박 강조를 준다.
 export function isBidDeadlineImminent(loot: Loot): boolean {
   if (!loot.bidDeadline || isAuctionEnded(loot)) return false;
-  const remainingMs = new Date(loot.bidDeadline).getTime() - Date.now();
+  const remainingMs = bidDeadlineMs(loot.bidDeadline) - Date.now();
   return remainingMs <= DEADLINE_IMMINENT_MS;
 }
 
