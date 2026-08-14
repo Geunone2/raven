@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ContentSchedule, GuildMember, Loot, LootBid } from "@/lib/db/schema";
+import { GuildMember, Loot, LootBid } from "@/lib/db/schema";
 import {
   getLeadingBidder,
   isAuctionEnded,
@@ -26,7 +26,7 @@ export function AuctionCard({
   myBids,
   bidsByLootId,
 }: {
-  rows: { loot: Loot; schedule: ContentSchedule | null }[];
+  rows: { loot: Loot }[];
   myBids: Map<number, number>;
   bidsByLootId: Map<number, { bid: LootBid; member: GuildMember }[]>;
 }) {
@@ -50,7 +50,7 @@ export function AuctionCard({
   }, [emblaApi]);
 
   return (
-    <div className="w-full rounded-xl border border-edge bg-surface p-4 shadow-md min-h-100 lg:min-h-79">
+    <div className="w-full min-h-100 max-h-100 overflow-hidden rounded-xl border border-edge bg-surface p-4 shadow-md lg:min-h-79 lg:max-h-79">
       <div className="flex items-center justify-between">
         <p className="text-base font-bold text-brand">경매 (내판)</p>
         <Link href="/auctions" className="text-xs text-ink-muted hover:underline">

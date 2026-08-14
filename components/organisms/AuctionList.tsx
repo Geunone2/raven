@@ -1,4 +1,4 @@
-import { ContentSchedule, GuildMember, Loot, LootBid } from "@/lib/db/schema";
+import { GuildMember, Loot, LootBid } from "@/lib/db/schema";
 import {
   getAuctionWinner,
   getLeadingBidder,
@@ -22,7 +22,7 @@ export function AuctionList({
   bidsByLootId,
   myNickname,
 }: {
-  rows: { loot: Loot; schedule: ContentSchedule | null }[];
+  rows: { loot: Loot }[];
   myBids: Map<number, number>;
   bidsByLootId: Map<number, { bid: LootBid; member: GuildMember }[]>;
   myNickname: string | null;
