@@ -8,7 +8,7 @@ export type LabeledForumNotice = OfficialForumNotice & { source: NoticeSource };
 
 export function ForumNoticesCard({ notices }: { notices: LabeledForumNotice[] }) {
   return (
-    <div className="w-full min-h-70 rounded-xl border border-edge bg-surface p-4 shadow-md">
+    <div className="w-full min-h-70 max-h-70 overflow-hidden rounded-xl border border-edge bg-surface p-4 shadow-md">
       <div className="flex items-center justify-between">
         <p className="text-base font-bold text-brand">공식 포럼 소식</p>
         <Link href="/notices" className="text-xs text-ink-muted hover:underline">

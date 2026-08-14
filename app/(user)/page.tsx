@@ -50,19 +50,14 @@ export default async function GuildHomePage() {
         getMemberRankings(),
         getOpenAuctionLoots(),
     ]);
-    let myMonthCheckins: Map<number, ScheduleCheckin> = new Map();
     let myCheckinScheduleCheckins: Map<number, ScheduleCheckin> = new Map();
     let member: GuildMember | undefined;
     let balance = 0;
     let myBids: Map<number, number> = new Map();
 
     if (memberId) {
-        const [monthCheckins, checkinWindowCheckins, memberData, bankBalance, bidAmounts] =
+        const [checkinWindowCheckins, memberData, bankBalance, bidAmounts] =
             await Promise.all([
-                getMyScheduleCheckins(
-                    memberId,
-                    monthSchedules.map((schedule) => schedule.id)
-                ),
                 getMyScheduleCheckins(
                     memberId,
                     checkinSchedules.map((schedule) => schedule.id)
@@ -74,7 +69,6 @@ export default async function GuildHomePage() {
                     openAuctions.map((row) => row.loot.id)
                 ),
             ]);
-        myMonthCheckins = monthCheckins;
         myCheckinScheduleCheckins = checkinWindowCheckins;
         member = memberData;
         balance = bankBalance;
@@ -109,7 +103,7 @@ export default async function GuildHomePage() {
     // 카드 마크업을 변수로 한 번만 선언해서 모바일 전용 스택과 sm+ 그리드 양쪽에서
     // 재사용한다(아래 "카드 조립" 섹션 참고 — 왜 두 구조로 나눴는지 설명).
     const scheduleCard = (
-        <div className="min-h-176 rounded-xl border border-edge bg-surface p-4 shadow-md">
+        <div className="min-h-176 max-h-176 overflow-hidden rounded-xl border border-edge bg-surface p-4 shadow-md">
             <div className="flex items-center justify-between">
                 <p className="text-base font-bold text-brand">
                     오늘의 일정
@@ -119,17 +113,13 @@ export default async function GuildHomePage() {
                 </Link>
             </div>
             <div className="mt-3">
-                <ScheduleCalendar
-                    schedules={monthSchedules}
-                    myCheckinByScheduleId={myMonthCheckins}
-                    memberId={memberId}
-                />
+                <ScheduleCalendar schedules={monthSchedules}/>
             </div>
         </div>
     );
 
     const leaderAnnouncementsCard = (
-        <div className="min-h-70 rounded-xl border border-edge bg-surface p-4 shadow-md">
+        <div className="min-h-70 max-h-70 overflow-hidden rounded-xl border border-edge bg-surface p-4 shadow-md">
             <div className="flex items-center justify-between">
                 <p className="text-base font-bold text-brand">
                     리더 공지사항

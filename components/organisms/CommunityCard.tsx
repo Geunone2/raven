@@ -18,14 +18,14 @@ function KakaoTalkIcon() {
 
 export function CommunityCard() {
     return (
-        <div className="w-full rounded-xl border border-edge bg-surface p-4 shadow-md min-h-79">
+        <div className="w-full min-h-79 max-h-79 overflow-hidden rounded-xl border border-edge bg-surface p-4 shadow-md">
             <p className="text-base font-bold text-brand">커뮤니티</p>
             <div className="mt-6 space-y-6 flex flex-col justify-center">
                 <a
                     href="https://discord.com/invite/MDWFSUfG2q"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex w-full min-h-14 items-center justify-center gap-2 rounded-md bg-[#5865F2] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                    className="flex w-full min-h-14 max-h-14 items-center justify-center gap-2 rounded-md bg-[#5865F2] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
                 >
                     <DiscordIcon/>
                     디스코드 채널 참여
@@ -34,7 +34,7 @@ export function CommunityCard() {
                     href="https://open.kakao.com/o/giPIsTzi"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex w-full min-h-14 items-center justify-center gap-2 rounded-md bg-[#FEE500] px-4 py-2 text-sm font-semibold text-[#191919] transition-opacity hover:opacity-90"
+                    className="flex w-full min-h-14 max-h-14 items-center justify-center gap-2 rounded-md bg-[#FEE500] px-4 py-2 text-sm font-semibold text-[#191919] transition-opacity hover:opacity-90"
                 >
                     <KakaoTalkIcon/>
                     카카오톡 수다 채널
@@ -43,7 +43,7 @@ export function CommunityCard() {
                     href="https://open.kakao.com/o/giVjz1wi"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex w-full min-h-14 items-center justify-center gap-2 rounded-md bg-[#FEE500] px-4 py-2 text-sm font-semibold text-[#191919] transition-opacity hover:opacity-90"
+                    className="flex w-full min-h-14 max-h-14 items-center justify-center gap-2 rounded-md bg-[#FEE500] px-4 py-2 text-sm font-semibold text-[#191919] transition-opacity hover:opacity-90"
                 >
                     <KakaoTalkIcon/>
                     카카오톡 공지 채널

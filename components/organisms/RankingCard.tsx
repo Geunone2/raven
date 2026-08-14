@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { GuildMember } from "@/lib/db/schema";
 import { RankBadge } from "@/components/atoms/RankBadge";
 import { ClassBadge } from "@/components/atoms/ClassBadge";
@@ -41,16 +42,21 @@ export function RankingCard({
   members: GuildMember[];
 }) {
   return (
-    <div className="w-full rounded-xl border border-edge bg-surface p-4 shadow-md min-h-80">
-      <p className="flex items-center gap-1.5 text-base font-bold text-ink">
-        <Image src={STAT_ICONS[stat]} alt="" width={20} height={20} className="size-5" />
-        {STAT_LABELS[stat]}{" "}
-        <span className={STAT_ACCENT_CLASSES[stat]}>TOP {topCount}</span>
-      </p>
+    <div className="w-full min-h-80 rounded-xl border border-edge bg-surface p-4 shadow-md">
+      <div className="flex items-center justify-between gap-2">
+        <p className="flex items-center gap-1.5 text-base font-bold text-ink">
+          <Image src={STAT_ICONS[stat]} alt="" width={20} height={20} className="size-5" />
+          {STAT_LABELS[stat]}{" "}
+          <span className={STAT_ACCENT_CLASSES[stat]}>TOP {topCount}</span>
+        </p>
+        <Link href="/ranking" className="shrink-0 text-xs text-ink-muted hover:underline">
+          전체보기 &gt;
+        </Link>
+      </div>
       {members.length === 0 ? (
         <p className="mt-3 text-sm text-ink-faint">등록된 길드원이 없습니다.</p>
       ) : (
-        <ul className="mt-3 space-y-1.5 text-sm min-h-80">
+        <ul className="mt-3 space-y-1.5 text-sm">
           {members.map((member, index) => (
             <li key={member.id} className="flex items-center justify-between gap-2">
               <span className="flex min-w-0 items-center gap-2">
