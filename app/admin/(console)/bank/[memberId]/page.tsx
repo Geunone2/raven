@@ -23,7 +23,11 @@ export default async function MemberBankPage({
   ]);
 
   return (
-    <div className="max-w-2xl space-y-8">
+    // 거래 내역 표(BankTransactionTable)는 min-w-[700px]인데 예전엔 이 페이지
+    // 전체를 max-w-2xl(672px)로 좁혀놔서, 표가 자기 폭보다 좁은 상자 안에 갇혀
+    // 메모 칼럼이 화면 밖으로 밀려나 있었다(2026-08-14) — 다른 어드민 표 페이지
+    // (loots/members 등)처럼 폭 제한을 없애 표가 그대로 들어가게 한다.
+    <div className="space-y-8">
       <div>
         <h1 className="text-xl font-semibold text-ink">
           {member.nickname}님의 통장

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BankTransaction, GuildMember, GuildTreasuryTransaction } from "@/lib/db/schema";
+import { BankTransaction, GuildMember, GuildTreasuryTransaction, TreasurySettings } from "@/lib/db/schema";
 import type { ContentParticipationStats } from "@/lib/actions/scheduleCheckins";
 import { Button } from "@/components/atoms/Button";
 import { BankTransactionTable } from "@/components/organisms/BankTransactionTable";
@@ -26,7 +26,8 @@ export function BankViewToggle({
   totalPower,
   totalRewardPool,
   ancientFortressStats,
-  riftStats,
+  siegeStats,
+  settings,
 }: {
   treasuryBalance: number;
   treasuryTransactions: GuildTreasuryTransaction[];
@@ -41,7 +42,8 @@ export function BankViewToggle({
   totalPower: number;
   totalRewardPool: number;
   ancientFortressStats: ContentParticipationStats;
-  riftStats: ContentParticipationStats;
+  siegeStats: ContentParticipationStats;
+  settings: TreasurySettings;
 }) {
   const [view, setView] = useState<View>("all");
 
@@ -82,7 +84,8 @@ export function BankViewToggle({
               totalPower={totalPower}
               totalRewardPool={totalRewardPool}
               ancientFortressStats={ancientFortressStats}
-              riftStats={riftStats}
+              siegeStats={siegeStats}
+              settings={settings}
             />
           </div>
 

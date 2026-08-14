@@ -2,10 +2,6 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import {
-  PARTICIPATION_SHARE_OF_REWARD_POOL,
-  POWER_SHARE_OF_REWARD_POOL,
-} from "@/lib/constants/treasury";
 import { Button } from "@/components/atoms/Button";
 import { SpinRevealText } from "@/components/atoms/SpinRevealText";
 
@@ -40,12 +36,17 @@ export function SettlementEstimatorCard({
   myPower,
   totalPower,
   totalRewardPool,
+  participationRewardRatio,
+  powerRewardRatio,
 }: {
   myPoints: number;
   totalPoints: number;
   myPower: number;
   totalPower: number;
   totalRewardPool: number;
+  // 전부 %(0~100) 단위 — /admin/settings에서 조정한 값을 그대로 받는다.
+  participationRewardRatio: number;
+  powerRewardRatio: number;
 }) {
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
   const [resultKey, setResultKey] = useState(0);
@@ -53,12 +54,16 @@ export function SettlementEstimatorCard({
   // 참여 보상은 이번 2주 구간의 전체 보스 참여도(콘텐츠 종류 상관없이 2/3/4성
   // 보스·어비스보스·전투 참여 점수 합산) 비율로, 전투력 보상은 전체 길드원 전투력
   // 비율로 계산한다 — settleLootSale(장비 내판 정산 실행)과 동일한 방식.
-  // totalRewardPool은 이미 세금/혈비/총무비가 빠진 "누적 지급 보상 합계"라
-  // 50:50 분배가 원래의 32%:32% 정책과 같은 결과가 된다.
+  // totalRewardPool은 이미 세금/혈비/총무비가 빠진 "누적 지급 보상 합계"(참여+
+  // 전투력 보상 몫의 합)라, 그 안에서 참여:전투력 비중을 참여보상 비율과
+  // 전투력보상 비율의 상대 비(정규화)로 나눈다.
+  const totalRewardRatio = participationRewardRatio + powerRewardRatio;
+  const participationWeight = totalRewardRatio > 0 ? participationRewardRatio / totalRewardRatio : 0.5;
+  const powerWeight = totalRewardRatio > 0 ? powerRewardRatio / totalRewardRatio : 0.5;
   const participationRatio = totalPoints > 0 ? myPoints / totalPoints : 0;
   const powerRatio = totalPower > 0 ? myPower / totalPower : 0;
-  const myParticipationShare = totalRewardPool * PARTICIPATION_SHARE_OF_REWARD_POOL * participationRatio;
-  const myPowerShare = totalRewardPool * POWER_SHARE_OF_REWARD_POOL * powerRatio;
+  const myParticipationShare = totalRewardPool * participationWeight * participationRatio;
+  const myPowerShare = totalRewardPool * powerWeight * powerRatio;
   const myEstimatedShare = Math.round(myParticipationShare + myPowerShare);
 
   const revealed = status === "done";
@@ -75,7 +80,8 @@ export function SettlementEstimatorCard({
     <div className="w-full rounded-xl border border-edge bg-surface p-4 shadow-md min-h-120">
       <p className="text-base font-bold text-brand">장비 내판 - 내가 받을 수 있는 정산 몫은?</p>
       <p className="mt-1 font-mono text-xs text-ink-faint">
-        내 몫 = 누적 지급액 × (참여 비율 × 50% + 전투력 비율 × 50%)
+        내 몫 = 누적 지급액 × (참여 비율 × {Math.round(participationWeight * 100)}% + 전투력 비율 ×{" "}
+        {Math.round(powerWeight * 100)}%)
       </p>
 
       <div className="mt-4 space-y-1.5">

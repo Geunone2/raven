@@ -16,11 +16,13 @@ export function BankOverviewTable({
 
   return (
     <div className="overflow-x-auto rounded-md border border-edge">
-      <table className="w-full min-w-[700px] text-left text-sm">
+      {/* 길드명은 태블릿부터만 보여준다(2026-08-14) — 닉네임/잔액/내역 보기만
+          있으면 화면이 깨지지 않는다. */}
+      <table className="w-full min-w-[360px] text-left text-sm md:min-w-[700px]">
         <thead className="bg-surface-raised text-ink-faint">
           <tr>
             <th className="px-4 py-3 font-medium">닉네임</th>
-            <th className="px-4 py-3 font-medium">길드명</th>
+            <th className="hidden px-4 py-3 font-medium md:table-cell">길드명</th>
             <th className="px-4 py-3 font-medium">잔액</th>
             <th className="px-4 py-3 font-medium" />
           </tr>
@@ -29,7 +31,7 @@ export function BankOverviewTable({
           {rows.map(({ member, balance }) => (
             <tr key={member.id}>
               <td className="px-4 py-3 font-medium text-ink">{member.nickname}</td>
-              <td className="px-4 py-3 text-ink-faint">{member.guildName ?? "-"}</td>
+              <td className="hidden px-4 py-3 text-ink-faint md:table-cell">{member.guildName ?? "-"}</td>
               <td className="px-4 py-3 font-medium text-ink">
                 {balance.toLocaleString()}
               </td>
