@@ -1,15 +1,15 @@
-import { getBankBalances } from "@/lib/actions/bank";
+import { getBankBalances } from "@/lib/actions/treasury/bank";
 import {
   getGuildTreasuryBalance,
   getGuildTreasuryTransactions,
   getUnsettledAuctionLoots,
-} from "@/lib/actions/treasury";
-import { BankOverviewTable } from "@/components/organisms/BankOverviewTable";
-import { GuildTreasuryTable } from "@/components/organisms/GuildTreasuryTable";
-import { GuildTreasurySummaryCard } from "@/components/organisms/GuildTreasurySummaryCard";
-import { GuildTransactionForm } from "@/components/organisms/GuildTransactionForm";
-import { UnsettledAuctionsPanel } from "@/components/organisms/UnsettledAuctionsPanel";
-import { BankManagementTabs } from "@/components/organisms/BankManagementTabs";
+} from "@/lib/actions/treasury/treasury";
+import { BankOverviewTable } from "@/components/organisms/treasury/BankOverviewTable";
+import { TreasuryTable } from "@/components/organisms/treasury/TreasuryTable";
+import { TreasurySummaryCard } from "@/components/organisms/treasury/TreasurySummaryCard";
+import { TreasuryTransactionForm } from "@/components/organisms/treasury/TreasuryTransactionForm";
+import { UnsettledAuctionsPanel } from "@/components/organisms/treasury/UnsettledAuctionsPanel";
+import { BankManagementTabs } from "@/components/organisms/treasury/BankManagementTabs";
 
 export default async function BankOverviewPage() {
   const [rows, treasuryBalance, treasuryTransactions, unsettledLoots] = await Promise.all([
@@ -23,7 +23,7 @@ export default async function BankOverviewPage() {
     <div className="space-y-6">
       <h1 className="text-xl font-semibold text-ink">통장 관리</h1>
 
-      <GuildTreasurySummaryCard
+      <TreasurySummaryCard
         balance={treasuryBalance}
         transactions={treasuryTransactions}
         showLinks={false}
@@ -32,8 +32,8 @@ export default async function BankOverviewPage() {
 
       <BankManagementTabs
         unsettled={<UnsettledAuctionsPanel loots={unsettledLoots} />}
-        manual={<GuildTransactionForm />}
-        treasury={<GuildTreasuryTable transactions={treasuryTransactions} />}
+        manual={<TreasuryTransactionForm />}
+        treasury={<TreasuryTable transactions={treasuryTransactions} />}
         members={<BankOverviewTable rows={rows} />}
       />
     </div>

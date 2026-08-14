@@ -1,15 +1,15 @@
 import { redirect } from "next/navigation";
-import { getBankBalance, getBankBalancesWithBreakdown, getBankTransactions } from "@/lib/actions/bank";
+import { getBankBalance, getBankBalancesWithBreakdown, getBankTransactions } from "@/lib/actions/treasury/bank";
 import {
   getGuildTreasuryBalance,
   getGuildTreasuryTransactions,
   getTotalDistributedRewardPool,
-} from "@/lib/actions/treasury";
-import { getTreasurySettings } from "@/lib/actions/treasurySettings";
-import { getMemberPowerShare } from "@/lib/actions/members";
-import { getContentParticipationStats, getContributionStats } from "@/lib/actions/scheduleCheckins";
+} from "@/lib/actions/treasury/treasury";
+import { getTreasurySettings } from "@/lib/actions/treasury/treasurySettings";
+import { getMemberPowerShare } from "@/lib/actions/member/members";
+import { getContentParticipationStats, getContributionStats } from "@/lib/actions/schedule/scheduleCheckins";
 import { getSessionMemberId } from "@/lib/auth/session";
-import { BankViewToggle } from "@/components/organisms/BankViewToggle";
+import { BankViewToggle } from "@/components/organisms/treasury/BankViewToggle";
 
 export default async function BankPage() {
   const memberId = await getSessionMemberId();

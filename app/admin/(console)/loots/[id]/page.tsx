@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { getBidsForLoot, getLoot, updateLoot } from "@/lib/actions/loots";
-import { LootForm } from "@/components/organisms/LootForm";
-import { AuctionBidList } from "@/components/organisms/AuctionBidList";
+import { getBidsForLoot, getLoot, updateLoot } from "@/lib/actions/loot/loots";
+import { LootForm } from "@/components/organisms/loot/LootForm";
+import { AuctionBidList } from "@/components/organisms/loot/AuctionBidList";
 
 export default async function EditLootPage({
   params,

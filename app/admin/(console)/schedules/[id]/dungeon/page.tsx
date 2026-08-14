@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
-import { getSchedule } from "@/lib/actions/schedules";
-import { getDungeonRun, saveDungeonRun } from "@/lib/actions/dungeonRuns";
-import { getParticipationsForSchedule } from "@/lib/actions/participations";
-import { getScheduleBasePoints } from "@/lib/constants/schedules";
-import { DungeonRunForm } from "@/components/organisms/DungeonRunForm";
-import { ParticipationTable } from "@/components/organisms/ParticipationTable";
+import { getSchedule } from "@/lib/actions/schedule/schedules";
+import { getDungeonRun, saveDungeonRun } from "@/lib/actions/schedule/dungeonRuns";
+import { getParticipationsForSchedule } from "@/lib/actions/schedule/participations";
+import { getScheduleBasePoints } from "@/lib/constants/schedule/schedules";
+import { DungeonRunForm } from "@/components/organisms/schedule/DungeonRunForm";
+import { ParticipationTable } from "@/components/organisms/schedule/ParticipationTable";
 
 export default async function DungeonRunPage({
   params,

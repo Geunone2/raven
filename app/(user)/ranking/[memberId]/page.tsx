@@ -4,11 +4,11 @@ import {
     getMember,
     getMemberRankPositions,
     getMemberStatHistory,
-} from "@/lib/actions/members";
-import {ClassBadge} from "@/components/atoms/ClassBadge";
-import {MemberRankCards} from "@/components/organisms/MemberRankCards";
-import {MemberStatTrendChart} from "@/components/organisms/MemberStatTrendChart";
-import {MemberCombinedStatTrendChart} from "@/components/organisms/MemberCombinedStatTrendChart";
+} from "@/lib/actions/member/members";
+import {ClassBadge} from "@/components/organisms/member/ClassBadge";
+import {MemberRankCards} from "@/components/organisms/member/MemberRankCards";
+import {MemberStatTrendChart} from "@/components/organisms/member/MemberStatTrendChart";
+import {MemberCombinedStatTrendChart} from "@/components/organisms/member/MemberCombinedStatTrendChart";
 
 export default async function MemberRankingDetailPage({
                                                           params,

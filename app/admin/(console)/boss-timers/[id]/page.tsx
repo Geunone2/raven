@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { getBossTimer, updateBossTimer, recordBossKill } from "@/lib/actions/bossTimers";
-import { BossTimerForm } from "@/components/organisms/BossTimerForm";
+import { getBossTimer, updateBossTimer, recordBossKill } from "@/lib/actions/boss-timer/bossTimers";
+import { BossTimerForm } from "@/components/organisms/boss-timer/BossTimerForm";
 import { FormField } from "@/components/molecules/FormField";
 import { Input } from "@/components/atoms/Input";
 import { Button } from "@/components/atoms/Button";

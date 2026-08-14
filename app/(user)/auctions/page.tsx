@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import { getAuctionLoots, getBidsForLoot, getMyBidAmounts } from "@/lib/actions/loots";
-import { getMember } from "@/lib/actions/members";
+import { getAuctionLoots, getBidsForLoot, getMyBidAmounts } from "@/lib/actions/loot/loots";
+import { getMember } from "@/lib/actions/member/members";
 import { getSessionMemberId } from "@/lib/auth/session";
-import { AuctionFilterPanel } from "@/components/organisms/AuctionFilterPanel";
+import { AuctionFilterPanel } from "@/components/organisms/loot/AuctionFilterPanel";
 
 export default async function AuctionsPage() {
   const memberId = await getSessionMemberId();

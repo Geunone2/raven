@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { getMember, getMembersRanked, updateOwnStats } from "@/lib/actions/members";
+import { getMember, getMembersRanked, updateOwnStats } from "@/lib/actions/member/members";
 import { getSessionMemberId } from "@/lib/auth/session";
 import { formatMonthDayTimeUtc } from "@/lib/time";
-import { RankingPanel } from "@/components/organisms/RankingPanel";
-import { SelfProfileForm } from "@/components/organisms/SelfProfileForm";
+import { RankingPanel } from "@/components/organisms/ranking/RankingPanel";
+import { SelfProfileForm } from "@/components/organisms/member/SelfProfileForm";
 
 export default async function RankingPage() {
   const memberId = await getSessionMemberId();

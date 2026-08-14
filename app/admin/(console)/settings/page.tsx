@@ -1,5 +1,5 @@
-import { getTreasurySettings } from "@/lib/actions/treasurySettings";
-import { TreasurySettingsForm } from "@/components/organisms/TreasurySettingsForm";
+import { getTreasurySettings } from "@/lib/actions/treasury/treasurySettings";
+import { TreasurySettingsForm } from "@/components/organisms/treasury/TreasurySettingsForm";
 
 export default async function AdminSettingsPage() {
   const settings = await getTreasurySettings();

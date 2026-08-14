@@ -1,5 +1,5 @@
-import { createLoot } from "@/lib/actions/loots";
-import { LootForm } from "@/components/organisms/LootForm";
+import { createLoot } from "@/lib/actions/loot/loots";
+import { LootForm } from "@/components/organisms/loot/LootForm";
 
 export default async function NewLootPage() {
   return (

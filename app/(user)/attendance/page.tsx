@@ -1,15 +1,15 @@
 import { redirect } from "next/navigation";
-import { getMember } from "@/lib/actions/members";
-import { getSchedulesForCheckin } from "@/lib/actions/schedules";
+import { getMember } from "@/lib/actions/member/members";
+import { getSchedulesForCheckin } from "@/lib/actions/schedule/schedules";
 import {
   getContributionStats,
   getMyScheduleCheckins,
   getScheduleCheckinRoster,
-} from "@/lib/actions/scheduleCheckins";
+} from "@/lib/actions/schedule/scheduleCheckins";
 import { getSessionMemberId } from "@/lib/auth/session";
-import { AttendanceCheckinPanel } from "@/components/organisms/AttendanceCheckinPanel";
-import { AttendanceScoreGuideCard } from "@/components/organisms/AttendanceScoreGuideCard";
-import { MyContributionCard } from "@/components/organisms/MyContributionCard";
+import { AttendanceCheckinPanel } from "@/components/organisms/schedule/AttendanceCheckinPanel";
+import { AttendanceScoreGuideCard } from "@/components/organisms/schedule/AttendanceScoreGuideCard";
+import { MyContributionCard } from "@/components/organisms/member/MyContributionCard";
 
 export default async function AttendancePage() {
   const memberId = await getSessionMemberId();

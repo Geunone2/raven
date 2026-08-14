@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { getAnnouncement, updateAnnouncement } from "@/lib/actions/announcements";
-import { AnnouncementForm } from "@/components/organisms/AnnouncementForm";
+import { getAnnouncement, updateAnnouncement } from "@/lib/actions/announcement/announcements";
+import { AnnouncementForm } from "@/components/organisms/announcement/AnnouncementForm";
 
 export default async function EditAnnouncementPage({
   params,

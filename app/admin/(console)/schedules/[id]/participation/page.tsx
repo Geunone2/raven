@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import { getSchedule } from "@/lib/actions/schedules";
-import { getParticipationsForSchedule } from "@/lib/actions/participations";
-import { contentTypeLabels, getScheduleBasePoints } from "@/lib/constants/schedules";
-import { ParticipationTable } from "@/components/organisms/ParticipationTable";
-import { ParticipationExportButton } from "@/components/atoms/ParticipationExportButton";
+import { getSchedule } from "@/lib/actions/schedule/schedules";
+import { getParticipationsForSchedule } from "@/lib/actions/schedule/participations";
+import { contentTypeLabels, getScheduleBasePoints } from "@/lib/constants/schedule/schedules";
+import { ParticipationTable } from "@/components/organisms/schedule/ParticipationTable";
+import { ParticipationExportButton } from "@/components/organisms/schedule/ParticipationExportButton";
 
 export default async function ScheduleParticipationPage({
   params,

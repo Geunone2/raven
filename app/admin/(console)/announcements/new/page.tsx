@@ -1,5 +1,5 @@
-import { createAnnouncement } from "@/lib/actions/announcements";
-import { AnnouncementForm } from "@/components/organisms/AnnouncementForm";
+import { createAnnouncement } from "@/lib/actions/announcement/announcements";
+import { AnnouncementForm } from "@/components/organisms/announcement/AnnouncementForm";
 
 export default function NewAnnouncementPage() {
   return (

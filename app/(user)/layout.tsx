@@ -1,7 +1,7 @@
 import { getSessionMemberId } from "@/lib/auth/session";
-import { getMember } from "@/lib/actions/members";
-import { Header } from "@/components/organisms/Header";
-import { Footer } from "@/components/organisms/Footer";
+import { getMember } from "@/lib/actions/member/members";
+import { Header } from "@/components/organisms/layout/Header";
+import { Footer } from "@/components/organisms/layout/Footer";
 
 export default async function UserLayout({
   children,
